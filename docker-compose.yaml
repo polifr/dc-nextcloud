@@ -1,0 +1,31 @@
+name: dc-nextcloud
+
+services:
+  nc-postgresql:
+    image: "postgres:16"
+    restart: no
+    container_name: "nc-postgresql"
+    environment:
+      POSTGRES_USER: "nextcloud"
+      POSTGRES_PASSWORD: "nextcloud"
+      POSTGRES_DB: "nextcloud"
+    volumes:
+      - ./nc-postgresql/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - nc-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nextcloud -d nextcloud"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  nc-redis:
+    image: redis:7
+    restart: no
+    container_name: "nc-redis"
+    ports:
+      - 6379:6379
+    networks:
+      - nc-network
