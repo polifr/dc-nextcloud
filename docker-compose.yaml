@@ -29,6 +29,8 @@ services:
       - 6379:6379
     networks:
       - nc-network
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
 networks: 
   nc-network:
