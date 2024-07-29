@@ -1,0 +1,26 @@
+# Ignore everything:
+/*
+/*/*
+/*/*/*
+
+# Except for those files/directories:
+!.gitignore
+!README.md
+!apps
+!apps/onlyoffice
+!apps/onlyoffice/3rd-Party.license
+!apps/onlyoffice/AUTHORS.md
+!apps/onlyoffice/CHANGELOG.md
+!apps/onlyoffice/LICENSE
+!apps/onlyoffice/README.md
+!apps/onlyoffice/3rdparty
+!apps/onlyoffice/appinfo
+!apps/onlyoffice/assets
+!apps/onlyoffice/css
+!apps/onlyoffice/img
+!apps/onlyoffice/js
+!apps/onlyoffice/l10n
+!apps/onlyoffice/lib
+!apps/onlyoffice/licenses
+!apps/onlyoffice/screenshots
+!apps/onlyoffice/templates
