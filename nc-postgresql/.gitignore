@@ -1,7 +1,6 @@
 # Ignore everything:
 *
 
-# Except for the themes directories:
+# Except for those files/directories:
 !.gitignore
 !README.md
-!data
