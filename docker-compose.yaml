@@ -13,8 +13,6 @@ services:
       - ./nc-postgresql/data:/var/lib/postgresql/data
     ports:
       - 5432:5432
-    networks:
-      - nc-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nextcloud -d nextcloud"]
       interval: 5s
@@ -27,11 +25,28 @@ services:
     container_name: "nc-redis"
     ports:
       - 6379:6379
-    networks:
-      - nc-network
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
-networks: 
-  nc-network:
-    driver: bridge
+  nc-nextcloud:
+    image: nextcloud:29
+    restart: no
+    container_name: "nc-nextcloud"
+    ports:
+      - 8080:80
+    volumes:
+      - ./nc-nextcloud/html:/var/www/html
+      - ./nc-nextcloud/apps:/var/www/html/custom_apps
+      - ./nc-nextcloud/config:/var/www/html/config
+      - ./nc-nextcloud/data:/var/www/html/data
+    environment:
+      - POSTGRES_DB=nextcloud
+      - POSTGRES_USER=nextcloud
+      - POSTGRES_PASSWORD=nextcloud
+      - POSTGRES_HOST=nc-postgresql
+      - REDIS_HOST=nc-redis
+      - NEXTCLOUD_ADMIN_USER=admin
+      - NEXTCLOUD_ADMIN_PASSWORD=nextcloud
+    links:
+      - nc-postgresql
+      - nc-redis
