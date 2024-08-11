@@ -28,6 +28,23 @@ services:
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
 
+  nc-onlyoffice-document-server:
+    image: onlyoffice/documentserver:8.1
+    restart: no
+    container_name: "nc-onlyoffice-document-server"
+    ports:
+      - 80:80
+    volumes:
+      - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
+      - ./nc-onlyoffice/logs:/var/log/onlyoffice
+      - ./nc-onlyoffice/lib:/var/lib/onlyoffice
+      - ./nc-onlyoffice/db:/var/lib/postgresql
+    environment:
+      - REDIS_SERVER_HOST=nc-redis
+      - JWT_SECRET=nc_jwt_secret
+    links:
+      - nc-redis
+
   nc-nextcloud:
     image: nextcloud:29
     restart: no
