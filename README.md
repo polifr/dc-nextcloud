@@ -11,3 +11,7 @@ Docker images references:
 
 Inspiring references:
 - <https://github.com/ONLYOFFICE/docker-onlyoffice-nextcloud>
+- <https://www.heyvaldemar.com/install-nextcloud-with-onlyoffice-using-docker-compose/>
+- <https://helpcenter.onlyoffice.com/installation/docs-nextcloud-proxy.aspx>
+- <https://help.nextcloud.com/t/docker-nextcloud-onlyoffice-let-s-encrypt-nginx-samba-cron/113030>
+- <https://github.com/Destripador/docker-nextcloud-onlyoffice>
