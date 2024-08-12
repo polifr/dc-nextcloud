@@ -33,7 +33,7 @@ services:
     restart: no
     container_name: "nc-onlyoffice-document-server"
     ports:
-      - 80:80
+      - 8180:80
     volumes:
       - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
       - ./nc-onlyoffice/logs:/var/log/onlyoffice
@@ -67,3 +67,13 @@ services:
     links:
       - nc-postgresql
       - nc-redis
+
+  nc-nginx:
+    image: nginx:1.27
+    restart: no
+    container_name: "nc-nginx"
+    ports:
+      - 80:80
+    links:
+      - nc-nextcloud
+      - nc-onlyoffice-document-server
