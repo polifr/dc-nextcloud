@@ -4,3 +4,5 @@
 # Except for those files/directories:
 !.gitignore
 !README.md
+!config
+!config/default.conf

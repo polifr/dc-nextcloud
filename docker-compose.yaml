@@ -11,29 +11,27 @@ services:
       POSTGRES_DB: "nextcloud"
     volumes:
       - ./nc-postgresql/data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nextcloud -d nextcloud"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - nc-proxy-network
 
   nc-redis:
     image: redis:7
     restart: no
     container_name: "nc-redis"
-    ports:
-      - 6379:6379
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    networks:
+      - nc-proxy-network
 
   nc-onlyoffice-document-server:
     image: onlyoffice/documentserver:8.1
     restart: no
     container_name: "nc-onlyoffice-document-server"
-    ports:
-      - 8180:80
     volumes:
       - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
       - ./nc-onlyoffice/logs:/var/log/onlyoffice
@@ -42,7 +40,11 @@ services:
     environment:
       - REDIS_SERVER_HOST=nc-redis
       - JWT_SECRET=nc_jwt_secret
-    links:
+    expose:
+      - 80
+    networks:
+      - nc-proxy-network
+    depends_on:
       - nc-redis
 
   nc-nextcloud:
@@ -64,9 +66,11 @@ services:
       - REDIS_HOST=nc-redis
       - NEXTCLOUD_ADMIN_USER=admin
       - NEXTCLOUD_ADMIN_PASSWORD=nextcloud
-    links:
-      - nc-postgresql
+    networks:
+      - nc-proxy-network
+    depends_on:
       - nc-redis
+      - nc-postgresql
 
   nc-nginx:
     image: nginx:1.27
@@ -74,6 +78,12 @@ services:
     container_name: "nc-nginx"
     ports:
       - 80:80
-    links:
-      - nc-nextcloud
-      - nc-onlyoffice-document-server
+    volumes:
+      - ./nc-nginx/config:/etc/nginx/conf.d
+    networks:
+      - nc-proxy-network
+
+networks:
+  nc-proxy-network:
+    external:
+      name: nc-nginx
