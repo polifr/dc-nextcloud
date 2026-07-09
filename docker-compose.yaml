@@ -58,8 +58,8 @@ services:
   nc-nextcloud:
     image: nextcloud:32
     container_name: "nc-nextcloud"
-    ports:
-      - 8080:80
+    expose:
+      - 80
     volumes:
       - nc-nextcloud-volume:/var/www/html
     environment:
@@ -80,11 +80,14 @@ services:
     image: nginx:1.31
     container_name: "nc-nginx"
     ports:
-      - 80:80
+      - 8080:80
     volumes:
       - ./nc-nginx/config:/etc/nginx/conf.d
     networks:
       - nc-proxy-network
+    depends_on:
+      - nc-nextcloud
+      - nc-onlyoffice-document-server
 
 networks:
   nc-proxy-network:
