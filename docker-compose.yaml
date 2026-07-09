@@ -9,7 +9,7 @@ volumes:
 services:
   nc-postgresql:
     image: "postgres:18"
-    container_name: "nc-postgresql"
+    restart: unless-stopped
     environment:
       POSTGRES_USER: "nextcloud"
       POSTGRES_PASSWORD: "nextcloud"
@@ -29,7 +29,7 @@ services:
 
   nc-redis:
     image: redis:8
-    container_name: "nc-redis"
+    restart: unless-stopped
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
     expose:
@@ -39,46 +39,59 @@ services:
 
   nc-onlyoffice-document-server:
     image: onlyoffice/documentserver:9.4
-    container_name: "nc-onlyoffice-document-server"
+    restart: unless-stopped
 #    volumes:
 #      - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
 #      - ./nc-onlyoffice/logs:/var/log/onlyoffice
 #      - ./nc-onlyoffice/lib:/var/lib/onlyoffice
 #      - ./nc-onlyoffice/db:/var/lib/postgresql
     environment:
-      - REDIS_SERVER_HOST=nc-redis
-      - JWT_SECRET=nc_jwt_secret
+      REDIS_SERVER_HOST: nc-redis
+      JWT_SECRET: nc_jwt_secret
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     expose:
       - 80
     networks:
       - nc-proxy-network
     depends_on:
-      - nc-redis
+      nc-redis:
+        condition: service_healthy
 
   nc-nextcloud:
     image: nextcloud:32
-    container_name: "nc-nextcloud"
+    restart: unless-stopped
     expose:
       - 80
     volumes:
       - nc-nextcloud-volume:/var/www/html
     environment:
-      - POSTGRES_DB=nextcloud
-      - POSTGRES_USER=nextcloud
-      - POSTGRES_PASSWORD=nextcloud
-      - POSTGRES_HOST=nc-postgresql
-      - REDIS_HOST=nc-redis
-      - NEXTCLOUD_ADMIN_USER=admin
-      - NEXTCLOUD_ADMIN_PASSWORD=nextcloud
+      POSTGRES_DB: nextcloud
+      POSTGRES_USER: nextcloud
+      POSTGRES_PASSWORD: nextcloud
+      POSTGRES_HOST: nc-postgresql
+      REDIS_HOST: nc-redis
+      NEXTCLOUD_ADMIN_USER: admin
+      NEXTCLOUD_ADMIN_PASSWORD: nextcloud
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/status.php"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
     networks:
       - nc-proxy-network
     depends_on:
-      - nc-redis
-      - nc-postgresql
+      nc-redis:
+        condition: service_healthy
+      nc-postgresql:
+        condition: service_healthy
 
   nc-nginx:
     image: nginx:1.31
-    container_name: "nc-nginx"
+    restart: unless-stopped
     ports:
       - 8080:80
     volumes:
@@ -86,8 +99,10 @@ services:
     networks:
       - nc-proxy-network
     depends_on:
-      - nc-nextcloud
-      - nc-onlyoffice-document-server
+      nc-nextcloud:
+        condition: service_healthy
+      nc-onlyoffice-document-server:
+        condition: service_healthy
 
 networks:
   nc-proxy-network:
