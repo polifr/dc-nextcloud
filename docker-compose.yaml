@@ -1,42 +1,50 @@
 name: dc-nextcloud
 
+volumes:
+  nc-postgres-volume:
+    driver: local
+  nc-nextcloud-volume:
+    driver: local
+
 services:
   nc-postgresql:
-    image: "postgres:16"
-    restart: no
+    image: "postgres:18"
     container_name: "nc-postgresql"
     environment:
       POSTGRES_USER: "nextcloud"
       POSTGRES_PASSWORD: "nextcloud"
       POSTGRES_DB: "nextcloud"
     volumes:
-      - ./nc-postgresql/data:/var/lib/postgresql/data
+      - nc-postgres-volume:/var/lib/postgresql/18/docker
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nextcloud -d nextcloud"]
-      interval: 5s
+      start_period: 10s
+      interval: 10s
       timeout: 5s
       retries: 5
+    expose:
+      - 5432
     networks:
       - nc-proxy-network
 
   nc-redis:
-    image: redis:7
-    restart: no
+    image: redis:8
     container_name: "nc-redis"
     healthcheck:
       test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+    expose:
+      - 6379
     networks:
       - nc-proxy-network
 
   nc-onlyoffice-document-server:
-    image: onlyoffice/documentserver:8.1
-    restart: no
+    image: onlyoffice/documentserver:9.4
     container_name: "nc-onlyoffice-document-server"
-    volumes:
-      - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
-      - ./nc-onlyoffice/logs:/var/log/onlyoffice
-      - ./nc-onlyoffice/lib:/var/lib/onlyoffice
-      - ./nc-onlyoffice/db:/var/lib/postgresql
+#    volumes:
+#      - ./nc-onlyoffice/data:/var/www/onlyoffice/Data
+#      - ./nc-onlyoffice/logs:/var/log/onlyoffice
+#      - ./nc-onlyoffice/lib:/var/lib/onlyoffice
+#      - ./nc-onlyoffice/db:/var/lib/postgresql
     environment:
       - REDIS_SERVER_HOST=nc-redis
       - JWT_SECRET=nc_jwt_secret
@@ -48,16 +56,12 @@ services:
       - nc-redis
 
   nc-nextcloud:
-    image: nextcloud:29
-    restart: no
+    image: nextcloud:32
     container_name: "nc-nextcloud"
     ports:
       - 8080:80
     volumes:
-      - ./nc-nextcloud/html:/var/www/html
-      - ./nc-nextcloud/apps:/var/www/html/custom_apps
-      - ./nc-nextcloud/config:/var/www/html/config
-      - ./nc-nextcloud/data:/var/www/html/data
+      - nc-nextcloud-volume:/var/www/html
     environment:
       - POSTGRES_DB=nextcloud
       - POSTGRES_USER=nextcloud
@@ -73,8 +77,7 @@ services:
       - nc-postgresql
 
   nc-nginx:
-    image: nginx:1.27
-    restart: no
+    image: nginx:1.31
     container_name: "nc-nginx"
     ports:
       - 80:80
@@ -85,5 +88,4 @@ services:
 
 networks:
   nc-proxy-network:
-    external:
-      name: nc-nginx
+    driver: bridge
