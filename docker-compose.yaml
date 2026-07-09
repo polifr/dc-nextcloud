@@ -47,7 +47,9 @@ services:
 #      - ./nc-onlyoffice/db:/var/lib/postgresql
     environment:
       REDIS_SERVER_HOST: nc-redis
+      JWT_ENABLED: "true"
       JWT_SECRET: nc_jwt_secret
+      JWT_HEADER: Authorization
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
       interval: 30s
@@ -95,7 +97,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./nc-nginx/config:/etc/nginx/conf.d
+      - ./nc-nginx/config:/etc/nginx/conf.d:ro
     networks:
       - nc-proxy-network
     depends_on:
