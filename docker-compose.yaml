@@ -92,6 +92,8 @@ services:
         condition: service_healthy
       nc-postgresql:
         condition: service_healthy
+      nc-onlyoffice-document-server:
+        condition: service_healthy
 
   nc-nginx:
     image: nginx:1.31
@@ -104,8 +106,6 @@ services:
       - nc-proxy-network
     depends_on:
       nc-nextcloud:
-        condition: service_healthy
-      nc-onlyoffice-document-server:
         condition: service_healthy
 
 networks:
