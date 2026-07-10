@@ -1,5 +1,5 @@
 start:
-	docker compose up
+	docker compose up -d --wait
 
 stop:
 	docker compose down
