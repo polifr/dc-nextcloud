@@ -70,7 +70,8 @@ services:
       - 80
     volumes:
       - nc-nextcloud-volume:/var/www/html
-      - ./nc-nextcloud/post-installation/onlyoffice.sh:/docker-entrypoint-hooks.d/post-installation/onlyoffice.sh:ro
+      - ./nc-nextcloud/post-installation:/docker-entrypoint-hooks.d/post-installation:ro
+      - ./nc-nextcloud/before-starting:/docker-entrypoint-hooks.d/before-starting:ro
     environment:
       POSTGRES_DB: nextcloud
       POSTGRES_USER: nextcloud
