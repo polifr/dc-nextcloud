@@ -1,3 +1,11 @@
+update:
+	docker pull postgres:18
+	docker pull redis:8
+	docker pull nextcloud:34
+	docker pull nginx:1.31
+	docker pull ghcr.io/euro-office/documentserver:latest
+	docker pull onlyoffice/documentserver:9.4
+
 start-onlyoffice:
 	OFFICE_TYPE=onlyoffice docker compose \
 		-f docker-compose-common.yaml \
