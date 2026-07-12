@@ -63,28 +63,6 @@ services:
       nc-redis:
         condition: service_healthy
 
-#  nc-euro-office-documentserver:
-#    image: ghcr.io/euro-office/documentserver:latest
-#    restart: unless-stopped
-#    environment:
-#      REDIS_SERVER_HOST: nc-redis
-#      JWT_ENABLED: "true"
-#      JWT_SECRET: nc_jwt_secret
-#      JWT_HEADER: Authorization
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
-#      start_period: 10s
-#      interval: 10s
-#      timeout: 5s
-#      retries: 10
-#    expose:
-#      - 80
-#    networks:
-#      - nc-proxy-network
-#    depends_on:
-#      nc-redis:
-#        condition: service_healthy
-
   nc-nextcloud:
     image: nextcloud:34
     restart: unless-stopped
@@ -92,8 +70,9 @@ services:
       - 80
     volumes:
       - nc-nextcloud-volume:/var/www/html
-      - ./nc-nextcloud/post-installation:/docker-entrypoint-hooks.d/post-installation:ro
-      - ./nc-nextcloud/before-starting:/docker-entrypoint-hooks.d/before-starting:ro
+      - ./nc-nextcloud/post-installation/openoffice.sh:/docker-entrypoint-hooks.d/post-installation/openoffice.sh:ro
+      - ./nc-nextcloud/before-starting/common-config.sh:/docker-entrypoint-hooks.d/before-starting/common-config.sh:ro
+      - ./nc-nextcloud/before-starting/openoffice.sh:/docker-entrypoint-hooks.d/before-starting/openoffice.sh:ro
     environment:
       POSTGRES_DB: nextcloud
       POSTGRES_USER: nextcloud
@@ -122,7 +101,7 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./nc-nginx/config:/etc/nginx/conf.d:ro
+      - ./nc-nginx/config/default-onlyoffice.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       start_period: 10s

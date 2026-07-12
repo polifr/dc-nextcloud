@@ -5,4 +5,4 @@
 !.gitignore
 !README.md
 !config
-!config/default.conf
+!config/*.conf
