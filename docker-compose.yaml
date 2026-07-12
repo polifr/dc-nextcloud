@@ -115,10 +115,6 @@ services:
         condition: service_healthy
       nc-postgresql:
         condition: service_healthy
-      nc-euro-office-documentserver:
-        condition: service_healthy
-      nc-onlyoffice-documentserver:
-        condition: service_healthy
 
   nc-nginx:
     image: nginx:1.31
