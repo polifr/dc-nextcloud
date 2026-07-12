@@ -1,0 +1,22 @@
+services:
+  nc-euro-office-documentserver:
+    image: ghcr.io/euro-office/documentserver:latest
+    restart: unless-stopped
+    environment:
+      REDIS_SERVER_HOST: nc-redis
+      JWT_ENABLED: "true"
+      JWT_SECRET: nc_jwt_secret
+      JWT_HEADER: Authorization
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - 80
+    networks:
+      - nc-proxy-network
+    depends_on:
+      nc-redis:
+        condition: service_healthy
