@@ -1,0 +1,8 @@
+services:
+  nc-onlyoffice-documentserver:
+    image: collabora/code:26.04.2.1.1
+    restart: unless-stopped
+    expose:
+      - 9980
+    networks:
+      - nc-proxy-network
