@@ -2,4 +2,4 @@
 
 set -e
 
-echo "Configuring Collabora..."
+echo "Configuring Collabora (richdocuments app)..."

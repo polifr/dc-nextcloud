@@ -2,6 +2,6 @@
 
 set -e
 
-echo "Installing ONLYOFFICE..."
+echo "Installing ONLYOFFICE (onlyoffice app)..."
 
 php occ app:install onlyoffice || true

@@ -2,4 +2,6 @@
 
 set -e
 
-echo "Installing Collabora..."
+echo "Installing Collabora (richdocuments app)..."
+
+php occ app:install richdocuments || true

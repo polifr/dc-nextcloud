@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Configuring Nextcloud Office..."
+echo "Configuring Nextcloud Office (eurooffice app)..."
 
 php occ config:app:set eurooffice DocumentServerUrl --value="/editors/"
 php occ config:app:set eurooffice verify_peer_off --value "true"

@@ -2,7 +2,7 @@
 
 set -e
 
-echo "Configuring ONLYOFFICE..."
+echo "Configuring ONLYOFFICE (onlyoffice app)..."
 
 php occ config:app:set onlyoffice DocumentServerUrl --value="/editors/"
 php occ config:app:set onlyoffice verify_peer_off --value "true"
