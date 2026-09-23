@@ -14,5 +14,13 @@ php occ config:system:set enabledPreviewProviders \
     --value='[
         "OC\\Preview\\PNG",
         "OC\\Preview\\JPEG",
+        "OC\\Preview\\GIF",
+        "OC\\Preview\\BMP",
+        "OC\\Preview\\XBitmap",
+        "OC\\Preview\\Krita",
+        "OC\\Preview\\WebP",
+        "OC\\Preview\\MarkDown",
+        "OC\\Preview\\TXT",
+        "OC\\Preview\\OpenDocument",
         "OC\\Preview\\PDF"
     ]'
