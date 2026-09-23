@@ -12,7 +12,7 @@ start-onlyoffice:
 	OFFICE_TYPE=onlyoffice docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-onlyoffice.yaml \
-		up -d --wait
+		up -d --build --wait
 
 stop-onlyoffice:
 	OFFICE_TYPE=onlyoffice docker compose \
@@ -30,7 +30,7 @@ start-euro-office:
 	OFFICE_TYPE=euro-office docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-euro-office.yaml \
-		up -d --wait
+		up -d --build --wait
 
 stop-euro-office:
 	OFFICE_TYPE=euro-office docker compose \
@@ -48,7 +48,7 @@ start-collabora:
 	OFFICE_TYPE=collabora docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-collabora.yaml \
-		up -d --wait
+		up -d --build --wait
 
 stop-collabora:
 	OFFICE_TYPE=collabora docker compose \

@@ -4,3 +4,15 @@ set -e
 
 php occ config:system:set trusted_domains 1 --value=nc-nextcloud
 php occ config:system:set overwrite.cli.url --value=http://nc-nextcloud
+
+php occ config:system:set enable_previews \
+    --type=boolean \
+    --value=true
+
+php occ config:system:set enabledPreviewProviders \
+    --type=json \
+    --value='[
+        "OC\\Preview\\PNG",
+        "OC\\Preview\\JPEG",
+        "OC\\Preview\\PDF"
+    ]'

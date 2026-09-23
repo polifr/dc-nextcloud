@@ -42,7 +42,10 @@ services:
       - nc-proxy-network
 
   nc-nextcloud:
-    image: nextcloud:34
+    build:
+      context: ./nc-nextcloud
+      dockerfile: Dockerfile
+    image: nc-nextcloud:latest
     restart: unless-stopped
     expose:
       - 80
@@ -61,10 +64,10 @@ services:
       NEXTCLOUD_ADMIN_PASSWORD: nextcloud
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/status.php"]
-      start_period: 10s
+      start_period: 20s
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 30
     networks:
       - nc-proxy-network
     depends_on:
