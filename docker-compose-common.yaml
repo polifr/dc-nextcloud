@@ -51,6 +51,7 @@ services:
       - 80
     volumes:
       - nc-nextcloud-volume:/var/www/html
+      - ./nc-nextcloud/post-installation/common-apps.sh:/docker-entrypoint-hooks.d/post-installation/common-apps.sh:ro
       - ./nc-nextcloud/post-installation/${OFFICE_TYPE}.sh:/docker-entrypoint-hooks.d/post-installation/${OFFICE_TYPE}.sh:ro
       - ./nc-nextcloud/before-starting/common-config.sh:/docker-entrypoint-hooks.d/before-starting/common-config.sh:ro
       - ./nc-nextcloud/before-starting/${OFFICE_TYPE}.sh:/docker-entrypoint-hooks.d/before-starting/${OFFICE_TYPE}.sh:ro
