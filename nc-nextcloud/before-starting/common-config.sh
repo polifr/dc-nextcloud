@@ -2,7 +2,10 @@
 
 set -e
 
+php occ config:system:set trusted_domains 0 --value=localhost
 php occ config:system:set trusted_domains 1 --value=nc-nextcloud
+php occ config:system:set trusted_domains 2 --value=nextcloud.local
+
 php occ config:system:set overwrite.cli.url --value=http://nc-nextcloud
 
 php occ config:system:set enable_previews \
@@ -24,3 +27,6 @@ php occ config:system:set enabledPreviewProviders \
         "OC\\Preview\\OpenDocument",
         "OC\\Preview\\PDF"
     ]'
+
+export OC_PASS=my-n3xtcl0u4
+php occ user:add --password-from-env --display-name="Test User" --group="test-users" test
