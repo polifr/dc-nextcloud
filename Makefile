@@ -70,3 +70,19 @@ stop: stop-onlyoffice
 reset: reset-onlyoffice
 
 clean: reset-onlyoffice reset-euro-office reset-collabora
+
+create-certificates:
+	mkdir -p nc-nginx/certs
+	openssl req \
+	    -x509 \
+	    -newkey rsa:2048 \
+	    -sha256 \
+	    -days 825 \
+	    -nodes \
+	    -keyout nc-nginx/certs/nextcloud.local.key \
+	    -out nc-nginx/certs/nextcloud.local.crt \
+	    -subj "/CN=nextcloud.local" \
+	    -addext "subjectAltName=DNS:nextcloud.local" \
+	    -addext "basicConstraints=critical,CA:FALSE" \
+	    -addext "keyUsage=digitalSignature,keyEncipherment" \
+	    -addext "extendedKeyUsage=serverAuth"
