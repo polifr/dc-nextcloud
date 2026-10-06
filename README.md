@@ -15,7 +15,9 @@ Before using this, you have to add the following to `hosts` file:
 ```
 127.0.0.1  nextcloud.local
 ```
-These are the `Makefile` commands:
+and generate the nginx certificates, using the `make create-certificates` command.
+
+These are the other `Makefile` optuons:
 - `make start-onlyoffice` starts docker compose with NextCloud and OnlyOffice
 - `make stop-onlyoffice` stops docker compose with NextCloud and OnlyOffice
 - `make reset-onlyoffice` deletes docker compose with NextCloud and OnlyOffice (services, volumes and network)

@@ -6,6 +6,10 @@ php occ config:system:set trusted_domains 0 --value=localhost
 php occ config:system:set trusted_domains 1 --value=nc-nextcloud
 php occ config:system:set trusted_domains 2 --value=nextcloud.local
 
+php occ config:system:set trusted_proxies 0 --value="172.30.0.0/24"
+
+php occ config:system:set overwriteprotocol --value=https
+
 php occ config:system:set overwrite.cli.url --value=http://nc-nextcloud
 
 php occ config:system:set enable_previews \
