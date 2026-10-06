@@ -9,3 +9,4 @@ php occ app:install spreed || true
 php occ app:install deck || true
 php occ app:install tasks || true
 php occ app:install forms || true
+php occ app:install groupfolders || true
