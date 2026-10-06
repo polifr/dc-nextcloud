@@ -7,6 +7,7 @@ services:
       JWT_ENABLED: "true"
       JWT_SECRET: nc_jwt_secret_012345678901234567
       JWT_HEADER: Authorization
+      USE_UNAUTHORIZED_STORAGE: "true"
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost/healthcheck"]
       start_period: 10s
