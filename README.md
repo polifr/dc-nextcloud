@@ -26,8 +26,6 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 
 
 ## Makefile options
-
-These are all the current `Makefile` options:
 - `make create-certificates` creates self signed certificates for https usage on nginx (run once then forget it)
 - `make start-onlyoffice` starts docker compose with Nextcloud and OnlyOffice
 - `make stop-onlyoffice` stops docker compose with Nextcloud and OnlyOffice
@@ -45,12 +43,14 @@ These are all the current `Makefile` options:
 - `make update` updates all the project docker images, currently useful to test Euro Office releases
 
 
-## Docker images references:
-- <https://hub.docker.com/_/nextcloud>
-- <https://hub.docker.com/r/onlyoffice/documentserver>
-- <https://hub.docker.com/_/redis>
-- <https://hub.docker.com/_/postgres>
-- <https://hub.docker.com/_/nginx> for reverse proxy
+## Docker images references and versions:
+- <https://hub.docker.com/_/nextcloud> 35
+- <https://hub.docker.com/r/onlyoffice/documentserver> 9.4
+- <https://github.com/Euro-Office/DocumentServer> latest
+- <https://hub.docker.com/r/collabora/code> latest
+- <https://hub.docker.com/_/redis> 8
+- <https://hub.docker.com/_/postgres> 18
+- <https://hub.docker.com/_/nginx> 1.31
 
 ## Inspiring references:
 - <https://github.com/ONLYOFFICE/docker-onlyoffice-nextcloud>
