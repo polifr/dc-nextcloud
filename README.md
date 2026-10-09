@@ -58,3 +58,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - <https://helpcenter.onlyoffice.com/installation/docs-nextcloud-proxy.aspx>
 - <https://help.nextcloud.com/t/docker-nextcloud-onlyoffice-let-s-encrypt-nginx-samba-cron/113030>
 - <https://github.com/Destripador/docker-nextcloud-onlyoffice>
+
+## TODO List
+- Add an LDAP server for centralized users / group management (eg. using <https://hub.docker.com/r/osixia/openldap>)
+- Add a mail server for Nextcloud notifications (eg. using <https://hub.docker.com/r/mailserver/docker-mailserver/>)
