@@ -1,0 +1,84 @@
+# =============================================================================
+# nc-ldap/bootstrap/01-base.ldif
+# Dati di base per OpenLDAP (osixia/openldap), suffix dc=nextcloud,dc=local
+#
+# - Il nodo radice (dc=nextcloud,dc=local) e l'utente cn=admin sono creati
+#   dall'immagine a partire da LDAP_DOMAIN / LDAP_ORGANISATION / LDAP_ADMIN_PASSWORD:
+#   qui NON vanno ripetuti.
+# - Il file viene caricato solo al primo avvio, a database vuoto.
+#   Dopo ogni modifica: make reset (cancella anche i volumi LDAP).
+# - Password di tutti gli utenti di test: my-n3xtcl0u4 (hash {SSHA}).
+# - Gli username (alice, bob, carol) sono volutamente diversi dagli utenti
+#   locali di Nextcloud (admin, test), per evitare collisioni.
+# =============================================================================
+
+
+# --- Unita' organizzative ----------------------------------------------------
+
+dn: ou=users,dc=nextcloud,dc=local
+objectClass: organizationalUnit
+ou: users
+description: Utenti
+
+dn: ou=groups,dc=nextcloud,dc=local
+objectClass: organizationalUnit
+ou: groups
+description: Gruppi
+
+
+# --- Utenti ------------------------------------------------------------------
+
+dn: uid=alice,ou=users,dc=nextcloud,dc=local
+objectClass: inetOrgPerson
+uid: alice
+cn: Alice Rossi
+sn: Rossi
+givenName: Alice
+displayName: Alice Rossi
+mail: alice@nextcloud.local
+userPassword: {SSHA}hgIAfhXmbWkSCAB2QeYlWIPYT2VAX7anqWgmJQ==
+
+dn: uid=bob,ou=users,dc=nextcloud,dc=local
+objectClass: inetOrgPerson
+uid: bob
+cn: Bob Bianchi
+sn: Bianchi
+givenName: Bob
+displayName: Bob Bianchi
+mail: bob@nextcloud.local
+userPassword: {SSHA}FvQOHK8qxzLdGe929h5Tqp7XRsPSTKiKQWIJIg==
+
+dn: uid=carol,ou=users,dc=nextcloud,dc=local
+objectClass: inetOrgPerson
+uid: carol
+cn: Carol Verdi
+sn: Verdi
+givenName: Carol
+displayName: Carol Verdi
+mail: carol@nextcloud.local
+userPassword: {SSHA}rO4gJKeW+omQQykRXT1M1pOYL+jQrXjoWzLP4A==
+
+
+# --- Gruppi ------------------------------------------------------------------
+# groupOfNames richiede almeno un attributo "member".
+
+dn: cn=nextcloud-admins,ou=groups,dc=nextcloud,dc=local
+objectClass: groupOfNames
+cn: nextcloud-admins
+description: Amministratori Nextcloud
+member: uid=alice,ou=users,dc=nextcloud,dc=local
+
+dn: cn=nextcloud-users,ou=groups,dc=nextcloud,dc=local
+objectClass: groupOfNames
+cn: nextcloud-users
+description: Utenti abilitati a Nextcloud
+member: uid=alice,ou=users,dc=nextcloud,dc=local
+member: uid=bob,ou=users,dc=nextcloud,dc=local
+member: uid=carol,ou=users,dc=nextcloud,dc=local
+
+dn: cn=developers,ou=groups,dc=nextcloud,dc=local
+objectClass: groupOfNames
+cn: developers
+description: Gruppo di esempio per condivisioni e group folders
+member: uid=bob,ou=users,dc=nextcloud,dc=local
+member: uid=carol,ou=users,dc=nextcloud,dc=local

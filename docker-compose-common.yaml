@@ -3,6 +3,10 @@ name: dc-nextcloud
 volumes:
   nc-postgres-volume:
     driver: local
+  nc-ldap-data-volume:
+    driver: local
+  nc-ldap-config-volume:
+    driver: local
   nc-nextcloud-volume:
     driver: local
 
@@ -41,6 +45,33 @@ services:
     networks:
       - nc-proxy-network
 
+  nc-ldap:
+    image: osixia/openldap:1.5.0
+    command: --copy-service
+    restart: unless-stopped
+    environment:
+      LDAP_ORGANIZATION: "Nextcloud Local"
+      LDAP_DOMAIN: "nextcloud.local"
+      LDAP_ADMIN_PASSWORD: "my-n3xtcl0u4"
+      LDAP_READONLY_USER: "true"
+      LDAP_READONLY_USER_USERNAME: "nc-ldap-bind"
+      LDAP_READONLY_USER_PASSWORD: "my-n3xtcl0u4"
+    volumes:
+      - nc-ldap-data-volume:/var/lib/ldap
+      - nc-ldap-config-volume:/etc/ldap/slapd.d
+      - ./nc-ldap/bootstrap:/container/service/slapd/assets/config/bootstrap/ldif/custom:ro
+    healthcheck:
+      test: ["CMD-SHELL", "ldapwhoami -x -H ldap://localhost -D cn=admin,dc=nextcloud,dc=local -w \"$$LDAP_ADMIN_PASSWORD\""]
+      start_period: 20s
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    expose:
+      - 389
+      - 636
+    networks:
+      - nc-proxy-network
+
   nc-nextcloud:
     build:
       context: ./nc-nextcloud
@@ -75,6 +106,8 @@ services:
       nc-redis:
         condition: service_healthy
       nc-postgresql:
+        condition: service_healthy
+      nc-ldap:
         condition: service_healthy
 
   nc-nginx:
