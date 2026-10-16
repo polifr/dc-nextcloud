@@ -1,6 +1,6 @@
 services:
   nc-euro-office-documentserver:
-    image: ghcr.io/euro-office/documentserver:latest
+    image: ghcr.io/euro-office/documentserver:v9.3.5
     restart: unless-stopped
     environment:
       REDIS_SERVER_HOST: nc-redis

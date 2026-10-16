@@ -3,7 +3,7 @@ update:
 	docker pull redis:8
 	docker pull nextcloud:35
 	docker pull nginx:1.31
-	docker pull ghcr.io/euro-office/documentserver:latest
+	docker pull ghcr.io/euro-office/documentserver:v9.3.5
 	docker pull onlyoffice/documentserver:10.0
 	docker pull collabora/code:latest
 	docker image prune -f
