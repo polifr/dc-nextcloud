@@ -4,7 +4,7 @@ update:
 	docker pull nextcloud:35
 	docker pull nginx:1.31
 	docker pull ghcr.io/euro-office/documentserver:latest
-	docker pull onlyoffice/documentserver:9.4
+	docker pull onlyoffice/documentserver:10.0
 	docker pull collabora/code:latest
 	docker image prune -f
 

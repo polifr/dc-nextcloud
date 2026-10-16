@@ -45,7 +45,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 
 ## Docker images references and versions:
 - <https://hub.docker.com/_/nextcloud> 35
-- <https://hub.docker.com/r/onlyoffice/documentserver> 9.4
+- <https://hub.docker.com/r/onlyoffice/documentserver> 10.0
 - <https://github.com/Euro-Office/DocumentServer> latest
 - <https://hub.docker.com/r/collabora/code> latest
 - <https://hub.docker.com/_/redis> 8
