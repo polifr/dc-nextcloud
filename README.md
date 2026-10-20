@@ -1,5 +1,5 @@
 # dc-nextcloud
-A docker-compose based repository to check deployment of Nextcloud Files and connectors (i.e. OnlyOffice, Euro Office) with basic backend services (Redis, Postgresql).
+A docker-compose based repository to check deployment of Nextcloud Files and connectors (i.e. OnlyOffice, Euro Office, Collabora) with basic backend services (Redis, Postgresql).
 
 These Nextcloud apps are installed by default during setup:
 - [calendar](https://apps.nextcloud.com/apps/calendar)
@@ -8,8 +8,9 @@ These Nextcloud apps are installed by default during setup:
 - [tasks](https://apps.nextcloud.com/apps/tasks)
 - [forms](https://apps.nextcloud.com/apps/forms) (surveys, polls and questionnaires creation)
 - [groupfolders](https://apps.nextcloud.com/apps/groupfolders)
+- [user_ldap](https://apps.nextcloud.com/apps/user_ldap)
 
-Currently, it integrates with OnlyOffice and Euro Office Document Server; configuration for Collabora integration on this project is still under development.
+It integrates with OnlyOffice, Euro Office and Collabora Document Servers.
 
 ## How to run the project (fast)
 
@@ -60,5 +61,5 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - <https://github.com/Destripador/docker-nextcloud-onlyoffice>
 
 ## TODO List
-- Add an LDAP server for centralized users / group management (eg. using <https://hub.docker.com/r/osixia/openldap>)
+- Integration with LDAP server for centralized users / group management (eg. using <https://hub.docker.com/r/osixia/openldap>) is under development
 - Add a mail server for Nextcloud notifications (eg. using <https://hub.docker.com/r/mailserver/docker-mailserver/>)
