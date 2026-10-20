@@ -1,6 +1,6 @@
 services:
   nc-collabora-documentserver:
-    image: collabora/code:latest
+    image: collabora/code:26.04.5.1.1
     restart: unless-stopped
     expose:
       - 9980
