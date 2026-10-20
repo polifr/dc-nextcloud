@@ -2,7 +2,21 @@ services:
   nc-collabora-documentserver:
     image: collabora/code:26.04.5.1.1
     restart: unless-stopped
+    environment:
+      aliasgroup1: "https://nextcloud.local:443,https://nextcloud\\.local:443"
+      extra_params: "--o:ssl.enable=false --o:ssl.termination=true"
+      dictionaries: "it_IT en_US"
     expose:
       - 9980
     networks:
       - nc-proxy-network
+
+  nc-nextcloud:
+    depends_on:
+      nc-collabora-documentserver:
+        condition: service_started
+
+  nc-nginx:
+    depends_on:
+      nc-nextcloud:
+        condition: service_started
