@@ -4,5 +4,6 @@
 # Except for those files/directories:
 !.gitignore
 !README.md
+!Dockerfile
 !config
 !config/*.conf
