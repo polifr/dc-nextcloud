@@ -49,9 +49,9 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - <https://hub.docker.com/r/onlyoffice/documentserver> 10.0
 - <https://github.com/Euro-Office/DocumentServer> v9.3.6
 - <https://hub.docker.com/r/collabora/code> 26.04.5.2.1 
-- <https://hub.docker.com/_/redis> 8
+- <https://hub.docker.com/_/redis> 8-alpine
 - <https://hub.docker.com/_/postgres> 18
-- <https://hub.docker.com/_/nginx> 1.31
+- <https://hub.docker.com/_/nginx> 1.31-alpine-slim
 
 ## Inspiring references:
 - <https://github.com/ONLYOFFICE/docker-onlyoffice-nextcloud>

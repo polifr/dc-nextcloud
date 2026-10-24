@@ -1,8 +1,8 @@
 update:
 	docker pull postgres:18
-	docker pull redis:8
+	docker pull redis:8-alpine
 	docker pull nextcloud:35
-	docker pull nginx:1.31
+	docker pull nginx:1.31-alpine-slim
 	docker pull ghcr.io/euro-office/documentserver:v9.3.6
 	docker pull onlyoffice/documentserver:10.0
 	docker pull collabora/code:26.04.5.2.1
