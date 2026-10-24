@@ -5,7 +5,7 @@ update:
 	docker pull nginx:1.31
 	docker pull ghcr.io/euro-office/documentserver:v9.3.6
 	docker pull onlyoffice/documentserver:10.0
-	docker pull collabora/code:26.04.5.1.1
+	docker pull collabora/code:26.04.5.2.1
 	docker image prune -f
 
 start-onlyoffice:
