@@ -3,7 +3,7 @@ update:
 	docker pull redis:8-alpine
 	docker pull nextcloud:35
 	docker pull nginx:1.31-alpine-slim
-	docker pull ghcr.io/euro-office/documentserver:v9.3.6
+	docker pull ghcr.io/euro-office/documentserver:v9.3.7
 	docker pull onlyoffice/documentserver:10.0
 	docker pull collabora/code:26.04.5.2.1
 	docker image prune -f
