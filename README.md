@@ -14,6 +14,8 @@ It integrates with OnlyOffice, Euro Office and Collabora Document Servers.
 
 ## How to run the project (fast)
 
+Initialize `.env` file, using the `make init-environment` command, then edit the file to set passwords and other credential values.
+
 Add the following to the system `hosts` file:
 ```
 127.0.0.1  nextcloud.local
@@ -27,6 +29,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 
 
 ## Makefile options
+- `make init-environment` initializes `.env` file, to be customized for passwords
 - `make create-certificates` creates self signed certificates for https usage on nginx (run once then forget it)
 - `make start-onlyoffice` starts docker compose with Nextcloud and OnlyOffice
 - `make stop-onlyoffice` stops docker compose with Nextcloud and OnlyOffice
