@@ -13,11 +13,12 @@ volumes:
 services:
   nc-postgresql:
     image: "postgres:18"
+    hostname: ${POSTGRES_HOST}
     restart: unless-stopped
     environment:
-      POSTGRES_USER: "nextcloud"
-      POSTGRES_PASSWORD: "nextcloud"
-      POSTGRES_DB: "nextcloud"
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - nc-postgres-volume:/var/lib/postgresql/18/docker
     healthcheck:
@@ -87,10 +88,10 @@ services:
       - ./nc-nextcloud/before-starting/common-config.sh:/docker-entrypoint-hooks.d/before-starting/common-config.sh:ro
       - ./nc-nextcloud/before-starting/${OFFICE_TYPE}.sh:/docker-entrypoint-hooks.d/before-starting/${OFFICE_TYPE}.sh:ro
     environment:
-      POSTGRES_DB: nextcloud
-      POSTGRES_USER: nextcloud
-      POSTGRES_PASSWORD: nextcloud
-      POSTGRES_HOST: nc-postgresql
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST: ${POSTGRES_HOST}
       REDIS_HOST: nc-redis
       NEXTCLOUD_ADMIN_USER: admin
       NEXTCLOUD_ADMIN_PASSWORD: my-n3xtcl0u4
@@ -109,6 +110,30 @@ services:
         condition: service_healthy
       nc-ldap:
         condition: service_healthy
+
+  nc-talk-hpb:
+    image: ghcr.io/nextcloud-releases/aio-talk:latest
+    restart: unless-stopped
+    environment:
+      NC_DOMAIN: nextcloud.local
+      TALK_HOST: nextcloud.local
+      TALK_PORT: "3478"
+      TURN_SECRET: ${TALK_TURN_SECRET}
+      SIGNALING_SECRET: ${TALK_SIGNALING_SECRET}
+      INTERNAL_SECRET: ${TALK_INTERNAL_SECRET}
+    ports:
+      - "3478:3478/tcp"
+      - "3478:3478/udp"
+    expose:
+      - "8081"
+    healthcheck:
+      test: ["CMD", "/healthcheck.sh"]
+      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - nc-proxy-network
 
   nc-nginx:
     build:

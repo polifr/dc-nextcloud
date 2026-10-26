@@ -1,3 +1,21 @@
+.PHONY: init-environment
+
+init-environment:
+	@if [ -f .env ]; then \
+		echo "Il file .env esiste già: non verrà modificato."; \
+	else \
+		set -eu; \
+		umask 077; \
+		cp .env.example .env; \
+		sed -i \
+			-e "s/^TALK_SIGNALING_SECRET=GENERATE_ME$$/TALK_SIGNALING_SECRET=$$(openssl rand -hex 32)/" \
+			-e "s/^TALK_TURN_SECRET=GENERATE_ME$$/TALK_TURN_SECRET=$$(openssl rand -hex 32)/" \
+			-e "s/^TALK_INTERNAL_SECRET=GENERATE_ME$$/TALK_INTERNAL_SECRET=$$(openssl rand -hex 32)/" \
+			.env; \
+		echo "Creato .env con segreti Talk generati."; \
+		echo "Completa le password CHANGE_ME prima di avviare i servizi."; \
+	fi
+
 update:
 	docker pull postgres:18
 	docker pull redis:8-alpine
@@ -6,6 +24,7 @@ update:
 	docker pull ghcr.io/euro-office/documentserver:v9.3.7
 	docker pull onlyoffice/documentserver:10.0
 	docker pull collabora/code:26.04.5.2.1
+	docker pull ghcr.io/nextcloud-releases/aio-talk:latest
 	docker image prune -f
 
 start-onlyoffice:
