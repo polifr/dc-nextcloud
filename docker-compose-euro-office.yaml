@@ -21,3 +21,12 @@ services:
     depends_on:
       nc-redis:
         condition: service_healthy
+
+  nc-nextcloud:
+    volumes:
+      - ./nc-nextcloud/post-installation/euro-office.sh:/docker-entrypoint-hooks.d/post-installation/euro-office.sh:ro
+      - ./nc-nextcloud/before-starting/euro-office.sh:/docker-entrypoint-hooks.d/before-starting/euro-office.sh:ro
+
+  nc-nginx:
+    volumes:
+      - ./nc-nginx/config/default-euro-office.conf:/etc/nginx/conf.d/default.conf:ro

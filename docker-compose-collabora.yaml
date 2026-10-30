@@ -12,11 +12,16 @@ services:
       - nc-proxy-network
 
   nc-nextcloud:
+    volumes:
+      - ./nc-nextcloud/post-installation/collabora.sh:/docker-entrypoint-hooks.d/post-installation/collabora.sh:ro
+      - ./nc-nextcloud/before-starting/collabora.sh:/docker-entrypoint-hooks.d/before-starting/collabora.sh:ro
     depends_on:
       nc-collabora-documentserver:
         condition: service_started
 
   nc-nginx:
+    volumes:
+      - ./nc-nginx/config/default-collabora.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       nc-nextcloud:
         condition: service_started

@@ -22,3 +22,12 @@ services:
     depends_on:
       nc-redis:
         condition: service_healthy
+
+  nc-nextcloud:
+    volumes:
+      - ./nc-nextcloud/post-installation/onlyoffice.sh:/docker-entrypoint-hooks.d/post-installation/onlyoffice.sh:ro
+      - ./nc-nextcloud/before-starting/onlyoffice.sh:/docker-entrypoint-hooks.d/before-starting/onlyoffice.sh:ro
+
+  nc-nginx:
+    volumes:
+      - ./nc-nginx/config/default-onlyoffice.conf:/etc/nginx/conf.d/default.conf:ro
