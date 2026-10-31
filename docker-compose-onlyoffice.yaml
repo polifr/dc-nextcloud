@@ -30,4 +30,4 @@ services:
 
   nc-nginx:
     volumes:
-      - ./nc-nginx/config/default-onlyoffice.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nc-nginx/config/includes/document-servers/onlyoffice.conf:/etc/nginx/includes/document-servers/onlyoffice.conf:ro

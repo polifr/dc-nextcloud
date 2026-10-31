@@ -31,67 +31,81 @@ update:
 	docker image prune -f
 
 start-onlyoffice:
-	OFFICE_TYPE=onlyoffice docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		up -d --build --wait
 
 stop-onlyoffice:
-	OFFICE_TYPE=onlyoffice docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		down
 
 reset-onlyoffice:
-	OFFICE_TYPE=onlyoffice docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		down -v
 
 start-euro-office:
-	OFFICE_TYPE=euro-office docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-euro-office.yaml \
 		up -d --build --wait
 
 stop-euro-office:
-	OFFICE_TYPE=euro-office docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-euro-office.yaml \
 		down
 
 reset-euro-office:
-	OFFICE_TYPE=euro-office docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-euro-office.yaml \
 		down -v
 
 start-collabora:
-	OFFICE_TYPE=collabora docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-collabora.yaml \
 		up -d --build --wait
 
 stop-collabora:
-	OFFICE_TYPE=collabora docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-collabora.yaml \
 		down
 
 reset-collabora:
-	OFFICE_TYPE=collabora docker compose \
+	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-collabora.yaml \
 		down -v
 
+start:
+	docker compose \
+		-f docker-compose-common.yaml \
+		up -d --build --wait
 
-start: start-onlyoffice
+stop:
+	docker compose \
+		-f docker-compose-common.yaml \
+		down
 
-stop: stop-onlyoffice
+reset:
+	docker compose \
+		-f docker-compose-common.yaml \
+		down -v
 
-reset: reset-onlyoffice
-
-clean: reset-onlyoffice reset-euro-office reset-collabora
+clean:
+	docker compose \
+		-f docker-compose-common.yaml \
+		-f docker-compose-collabora.yaml \
+		-f docker-compose-euro-office.yaml \
+		-f docker-compose-onlyoffice.yaml \
+		down -v
 
 create-certificates:
 	mkdir -p nc-nginx/certs
