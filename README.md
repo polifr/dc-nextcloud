@@ -29,7 +29,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 
 
 ## Makefile options
-- `make init-environment` initializes `.env` file, to be customized for passwords
+- `make init-environment` initializes `.env` file, to be customized for technical passwords and secrets
 - `make create-certificates` creates self signed certificates for https usage on nginx (run once then forget it)
 - `make start-onlyoffice` starts docker compose with Nextcloud and OnlyOffice
 - `make stop-onlyoffice` stops docker compose with Nextcloud and OnlyOffice
@@ -40,11 +40,11 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - `make start-collabora` starts docker compose with Nextcloud and Collabora
 - `make stop-collabora` stops docker compose with Nextcloud and Collabora
 - `make reset-collabora` deletes docker compose with Nextcloud and Collabora (services, volumes and network)
-- `make start` alias for `make start-onlyoffice`
-- `make stop` alias for `make stop-onlyoffice`
-- `make reset` alias for `make reset-onlyoffice`
+- `make start` starts docker compose with Nextcloud only (no document server)
+- `make stop` stops docker compose with Nextcloud only
+- `make reset` deletes docker compose with Nextcloud only (services, volumes and network)
 - `make clean` clears everything for any of the described solutions (OnlyOffice, Euro Office, Collabora)
-- `make update` updates all the project docker images, currently useful to test Euro Office releases
+- `make update` updates all the project docker images, currently useful to test latest releases
 
 
 ## Docker images references and versions:
