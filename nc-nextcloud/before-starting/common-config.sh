@@ -32,20 +32,19 @@ php occ config:system:set enabledPreviewProviders \
         "OC\\Preview\\PDF"
     ]'
 
-export OC_PASS=my-n3xtcl0u4
 php occ user:add --password-from-env --display-name="Test User" --group="test-users" test
 
 
 # Configurazione ldap
 php occ ldap:create-empty-config
 php occ ldap:set-config s01 ldapConfigurationActive "1"
-php occ ldap:set-config s01 ldapHost "ldap://nc-ldap"
+php occ ldap:set-config s01 ldapHost "ldap://${LDAP_HOST}"
 php occ ldap:set-config s01 ldapPort "389"
-php occ ldap:set-config s01 ldapAgentName "cn=nc-ldap-bind,dc=nextcloud,dc=local"
-php occ ldap:set-config s01 ldapAgentPassword "my-n3xtcl0u4"
-php occ ldap:set-config s01 ldapBase "dc=nextcloud,dc=local"
-php occ ldap:set-config s01 ldapBaseUsers "dc=nextcloud,dc=local"
-php occ ldap:set-config s01 ldapBaseGroups "dc=nextcloud,dc=local"
+php occ ldap:set-config s01 ldapAgentName "cn=${LDAP_READONLY_USER_USERNAME},${LDAP_BASE_DN}"
+php occ ldap:set-config s01 ldapAgentPassword "${LDAP_READONLY_USER_PASSWORD}"
+php occ ldap:set-config s01 ldapBase "${LDAP_BASE_DN}"
+php occ ldap:set-config s01 ldapBaseUsers "${LDAP_BASE_DN}"
+php occ ldap:set-config s01 ldapBaseGroups "${LDAP_BASE_DN}"
 php occ ldap:set-config s01 ldapUserFilter "inetOrgPerson"
 php occ ldap:set-config s01 ldapGroupFilter "(|(cn=nextcloud-admins)(cn=nextcloud-users))"
 php occ ldap:set-config s01 ldapGroupFilterGroups "nextcloud-admins;nextcloud-users"

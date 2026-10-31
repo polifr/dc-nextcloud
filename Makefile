@@ -8,11 +8,14 @@ init-environment:
 		umask 077; \
 		cp .env.example .env; \
 		sed -i \
+			-e "s/^POSTGRES_PASSWORD=GENERATE_ME$$/POSTGRES_PASSWORD=$$(openssl rand -base64 16)/" \
+			-e "s/^LDAP_ADMIN_PASSWORD=GENERATE_ME$$/LDAP_ADMIN_PASSWORD=$$(openssl rand -base64 16)/" \
+			-e "s/^LDAP_READONLY_USER_PASSWORD=GENERATE_ME$$/LDAP_READONLY_USER_PASSWORD=$$(openssl rand -base64 16)/" \
 			-e "s/^TALK_SIGNALING_SECRET=GENERATE_ME$$/TALK_SIGNALING_SECRET=$$(openssl rand -hex 32)/" \
 			-e "s/^TALK_TURN_SECRET=GENERATE_ME$$/TALK_TURN_SECRET=$$(openssl rand -hex 32)/" \
 			-e "s/^TALK_INTERNAL_SECRET=GENERATE_ME$$/TALK_INTERNAL_SECRET=$$(openssl rand -hex 32)/" \
 			.env; \
-		echo "Creato .env con segreti Talk generati."; \
+		echo "Creato .env con password e segreti Talk generati."; \
 		echo "Completa le password CHANGE_ME prima di avviare i servizi."; \
 	fi
 
