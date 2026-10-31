@@ -84,6 +84,30 @@ reset-collabora:
 		-f docker-compose-collabora.yaml \
 		down -v
 
+start-all:
+	docker compose \
+		-f docker-compose-common.yaml \
+		-f docker-compose-collabora.yaml \
+		-f docker-compose-euro-office.yaml \
+		-f docker-compose-onlyoffice.yaml \
+		up -d --build --wait
+
+stop-all:
+	docker compose \
+		-f docker-compose-common.yaml \
+		-f docker-compose-collabora.yaml \
+		-f docker-compose-euro-office.yaml \
+		-f docker-compose-onlyoffice.yaml \
+		down
+
+reset-all:
+	docker compose \
+		-f docker-compose-common.yaml \
+		-f docker-compose-collabora.yaml \
+		-f docker-compose-euro-office.yaml \
+		-f docker-compose-onlyoffice.yaml \
+		down -v
+
 start:
 	docker compose \
 		-f docker-compose-common.yaml \
