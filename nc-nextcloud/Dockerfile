@@ -1,4 +1,5 @@
-FROM nextcloud:35
+ARG NEXTCLOUD_VERSION
+FROM nextcloud:${NEXTCLOUD_VERSION}
 
 USER root
 RUN apt update && \

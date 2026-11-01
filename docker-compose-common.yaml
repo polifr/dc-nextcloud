@@ -48,7 +48,7 @@ services:
       - nc-proxy-network
 
   nc-ldap:
-    image: osixia/openldap:1.5.0
+    image: osixia/openldap:${OSIXIA_OPENLDAP_VERSION}
     hostname: ${LDAP_HOST}
     command: --copy-service
     restart: unless-stopped
@@ -79,6 +79,8 @@ services:
     build:
       context: ./nc-nextcloud
       dockerfile: Dockerfile
+      args:
+        NEXTCLOUD_VERSION: ${NEXTCLOUD_VERSION}
     image: nc-nextcloud:latest
     restart: unless-stopped
     expose:
@@ -118,7 +120,7 @@ services:
         condition: service_healthy
 
   nc-talk-hpb:
-    image: ghcr.io/nextcloud-releases/aio-talk:latest
+    image: ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
     restart: unless-stopped
     environment:
       NC_DOMAIN: nextcloud.local
@@ -145,6 +147,8 @@ services:
     build:
       context: ./nc-nginx
       dockerfile: Dockerfile
+      args:
+        NGINX_VERSION: ${NGINX_VERSION}
     image: nc-nginx:latest
     restart: unless-stopped
     ports:

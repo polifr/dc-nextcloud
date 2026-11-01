@@ -1,5 +1,12 @@
 export POSTGRES_VERSION := 18
 export REDIS_VERSION := 8-alpine
+export OSIXIA_OPENLDAP_VERSION := 1.5.0
+export NEXTCLOUD_VERSION := 35
+export NGINX_VERSION := 1.31-alpine-slim
+export EURO_OFFICE_DS_VERSION := v9.3.7-1
+export ONLYOFFICE_DS_VERSION := 10.0
+export COLLABORA_CODE_VERSION := 26.04.5.2.1
+export AIO_TALK_VERSION := latest
 
 .PHONY: init-environment
 
@@ -25,12 +32,13 @@ init-environment:
 update:
 	docker pull postgres:${POSTGRES_VERSION}
 	docker pull redis:${REDIS_VERSION}
-	docker pull nextcloud:35
-	docker pull nginx:1.31-alpine-slim
-	docker pull ghcr.io/euro-office/documentserver:v9.3.7
-	docker pull onlyoffice/documentserver:10.0
-	docker pull collabora/code:26.04.5.2.1
-	docker pull ghcr.io/nextcloud-releases/aio-talk:latest
+	docker pull osixia/openldap:${OSIXIA_OPENLDAP_VERSION}
+	docker pull nextcloud:${NEXTCLOUD_VERSION}
+	docker pull nginx:${NGINX_VERSION}
+	docker pull ghcr.io/euro-office/documentserver:${EURO_OFFICE_DS_VERSION}
+	docker pull onlyoffice/documentserver:${ONLYOFFICE_DS_VERSION}
+	docker pull collabora/code:${COLLABORA_CODE_VERSION}
+	docker pull ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
 	docker image prune -f
 
 start-onlyoffice:
