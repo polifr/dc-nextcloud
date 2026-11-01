@@ -1,3 +1,6 @@
+export POSTGRES_VERSION := 18
+export REDIS_VERSION := 8-alpine
+
 .PHONY: init-environment
 
 init-environment:
@@ -20,8 +23,8 @@ init-environment:
 	fi
 
 update:
-	docker pull postgres:18
-	docker pull redis:8-alpine
+	docker pull postgres:${POSTGRES_VERSION}
+	docker pull redis:${REDIS_VERSION}
 	docker pull nextcloud:35
 	docker pull nginx:1.31-alpine-slim
 	docker pull ghcr.io/euro-office/documentserver:v9.3.7

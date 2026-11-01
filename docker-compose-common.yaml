@@ -12,7 +12,7 @@ volumes:
 
 services:
   nc-postgresql:
-    image: "postgres:18"
+    image: postgres:${POSTGRES_VERSION}
     hostname: ${POSTGRES_HOST}
     restart: unless-stopped
     environment:
@@ -33,7 +33,7 @@ services:
       - nc-proxy-network
 
   nc-redis:
-    image: redis:8-alpine
+    image: redis:${REDIS_VERSION}
     hostname: ${REDIS_HOST}
     restart: unless-stopped
     healthcheck:
