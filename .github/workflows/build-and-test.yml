@@ -37,7 +37,7 @@ jobs:
 
       - name: ZAP Baseline Scan
         run: |
-          mkdir -r "$RUNNER_TEMP/zap"
+          mkdir -p "$RUNNER_TEMP/zap"
           docker run --rm \
             --add-host=${NEXTCLOUD_HOST}:host-gateway \
             -v "$RUNNER_TEMP/zap:/zap/wrk/:rw" \
