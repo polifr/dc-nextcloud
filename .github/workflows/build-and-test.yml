@@ -45,7 +45,8 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t https://${NEXTCLOUD_HOST} \
-            -r zap-report.html
+            -r zap-report.html \
+            -I
 
       - name: Upload ZAP report
         if: always()
