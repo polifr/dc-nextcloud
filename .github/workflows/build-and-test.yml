@@ -38,9 +38,10 @@ jobs:
       - name: ZAP Baseline Scan
         run: |
           mkdir -p "$RUNNER_TEMP/zap"
+          chmod a+w "$RUNNER_TEMP/zap"
           docker run --rm \
             --add-host=${NEXTCLOUD_HOST}:host-gateway \
-            -v "$RUNNER_TEMP/zap:/zap/wrk/:rw" \
+            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t https://${NEXTCLOUD_HOST} \
