@@ -37,9 +37,10 @@ jobs:
 
       - name: ZAP Baseline Scan
         run: |
+          mkdir -r "$RUNNER_TEMP/zap"
           docker run --rm \
             --add-host=${NEXTCLOUD_HOST}:host-gateway \
-            -v "$PWD:/zap/wrk/:rw" \
+            -v "$RUNNER_TEMP/zap:/zap/wrk/:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t https://${NEXTCLOUD_HOST} \
@@ -50,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-report
-          path: zap-report.html
+          path: ${{ runner.temp }}/zap/zap-report.html
           if-no-files-found: warn
           retention-days: 30
 
