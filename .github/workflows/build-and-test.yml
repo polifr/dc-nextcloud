@@ -50,12 +50,22 @@ jobs:
             -m 5
             -I
 
-      - name: Upload ZAP reports
+      - name: Upload HTML ZAP report
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zap-security-reports
-          path: ${{ runner.temp }}/zap/zap-report.*
+          name: zap-security-html-report
+          path: ${{ runner.temp }}/zap/zap-report.html
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload MD ZAP report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-md-report
+          path: ${{ runner.temp }}/zap/zap-report.md
           if-no-files-found: warn
           retention-days: 30
           archive: false
