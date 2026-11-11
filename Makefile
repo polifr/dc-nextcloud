@@ -18,6 +18,7 @@ init-environment:
 		umask 077; \
 		cp .env.example .env; \
 		sed -i \
+			-e "s|^NEXTCLOUD_ZAP_TEST_PASSWORD=GENERATE_ME$$|NEXTCLOUD_ZAP_TEST_PASSWORD=$$(openssl rand -base64 24)|" \
 			-e "s|^POSTGRES_PASSWORD=GENERATE_ME$$|POSTGRES_PASSWORD=$$(openssl rand -base64 24)|" \
 			-e "s|^LDAP_ADMIN_PASSWORD=GENERATE_ME$$|LDAP_ADMIN_PASSWORD=$$(openssl rand -base64 24)|" \
 			-e "s|^LDAP_READONLY_USER_PASSWORD=GENERATE_ME$$|LDAP_READONLY_USER_PASSWORD=$$(openssl rand -base64 24)|" \
