@@ -42,14 +42,48 @@ jobs:
           docker run --rm \
             --add-host=${NEXTCLOUD_HOST}:host-gateway \
             -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
+            --entrypoint /bin/sh \
             ghcr.io/zaproxy/zaproxy:stable \
-            zap-baseline.py \
-            -t https://${NEXTCLOUD_HOST} \
-            -r zap-report.html \
-            -w zap-report.md \
-            -m 5 \
-            -j --client-spider \
-            -I
+            -c '
+              zap-baseline.py \
+                -t https://'"${NEXTCLOUD_HOST}"' \
+                -r zap-report.html \
+                -w zap-report.md \
+                -m 5 \
+                -j --client-spider \
+                -I
+
+              scan_status=$?
+
+              if [ -f "$HOME/.ZAP/zap.log" ]; then
+                cp "$HOME/.ZAP/zap.log" /zap/wrk/zap.log
+                echo "ZAP log copied successfully."
+              else
+                echo "WARNING: ZAP log not found in $HOME/.ZAP/" >&2
+              fi
+
+              exit $scan_status
+            '
+
+      - name: Stop Nextcloud
+        if: always()
+        run: |
+          make stop
+
+      - name: Collect Docker Compose logs
+        if: always()
+        run: |
+          make logs > "$RUNNER_TEMP/docker-compose.log" 2>&1 || true
+
+      - name: Upload Docker Compose logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-compose-logs
+          path: ${{ runner.temp }}/docker-compose.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
 
       - name: Upload HTML ZAP report
         if: always()
@@ -67,6 +101,16 @@ jobs:
         with:
           name: zap-security-md-report
           path: ${{ runner.temp }}/zap/zap-report.md
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload ZAP log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-log
+          path: ${{ runner.temp }}/zap/zap.log
           if-no-files-found: warn
           retention-days: 30
           archive: false
