@@ -51,7 +51,7 @@ stop-onlyoffice:
 	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-onlyoffice.yaml \
-		down
+		stop
 
 reset-onlyoffice:
 	docker compose \
@@ -69,7 +69,7 @@ stop-euro-office:
 	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-euro-office.yaml \
-		down
+		stop
 
 reset-euro-office:
 	docker compose \
@@ -87,7 +87,7 @@ stop-collabora:
 	docker compose \
 		-f docker-compose-common.yaml \
 		-f docker-compose-collabora.yaml \
-		down
+		stop
 
 reset-collabora:
 	docker compose \
@@ -109,7 +109,7 @@ stop-all:
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
-		down
+		stop
 
 reset-all:
 	docker compose \
@@ -127,7 +127,12 @@ start:
 stop:
 	docker compose \
 		-f docker-compose-common.yaml \
-		down
+		stop
+
+logs:
+	docker compose \
+		-f docker-compose-common.yaml \
+		logs --no-color --timestamps
 
 reset:
 	docker compose \
