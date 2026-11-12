@@ -45,6 +45,10 @@ jobs:
             --entrypoint /bin/sh \
             ghcr.io/zaproxy/zaproxy:stable \
             -c '
+              echo "Updating ZAP add-ons..."
+              zap.sh -addonupdate
+
+              echo "Starting ZAP baseline scan..."
               zap-baseline.py \
                 -t https://'"${NEXTCLOUD_HOST}"' \
                 -r zap-report.html \
