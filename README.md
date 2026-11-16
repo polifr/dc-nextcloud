@@ -51,7 +51,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - <https://hub.docker.com/_/nextcloud> 35
 - <https://hub.docker.com/r/onlyoffice/documentserver> 10.0
 - <https://github.com/Euro-Office/DocumentServer/releases> v9.3.8
-- <https://hub.docker.com/r/collabora/code> 26.04.5.2.1 
+- <https://hub.docker.com/r/collabora/code> 26.04.6.1.1 
 - <https://hub.docker.com/_/redis> 8-alpine
 - <https://hub.docker.com/_/postgres> 18
 - <https://hub.docker.com/_/nginx> 1.31-alpine-slim
