@@ -55,6 +55,7 @@ Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` 
 - <https://hub.docker.com/_/redis> 8-alpine
 - <https://hub.docker.com/_/postgres> 18
 - <https://hub.docker.com/_/nginx> 1.31-alpine-slim
+- <https://hub.docker.com/r/zaproxy/zap-stable> 2.17.0
 
 ## Inspiring references:
 - <https://github.com/ONLYOFFICE/docker-onlyoffice-nextcloud>

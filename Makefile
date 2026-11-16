@@ -7,6 +7,7 @@ export EURO_OFFICE_DS_VERSION := v9.3.7-1
 export ONLYOFFICE_DS_VERSION := 10.0
 export COLLABORA_CODE_VERSION := 26.04.5.2.1
 export AIO_TALK_VERSION := latest
+export ZAP_PROXY_VERSION := 2.17.0
 
 .PHONY: init-environment
 
@@ -35,11 +36,12 @@ update:
 	docker pull redis:${REDIS_VERSION}
 	docker pull osixia/openldap:${OSIXIA_OPENLDAP_VERSION}
 	docker pull nextcloud:${NEXTCLOUD_VERSION}
+	docker pull ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
 	docker pull nginx:${NGINX_VERSION}
+	docker pull zaproxy/zap-stable:${ZAP_PROXY_VERSION}
 	docker pull ghcr.io/euro-office/documentserver:${EURO_OFFICE_DS_VERSION}
 	docker pull onlyoffice/documentserver:${ONLYOFFICE_DS_VERSION}
 	docker pull collabora/code:${COLLABORA_CODE_VERSION}
-	docker pull ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
 	docker image prune -f
 
 start-onlyoffice:

@@ -175,7 +175,7 @@ services:
         condition: service_healthy
 
   nc-zap:
-    image: zaproxy/zap-stable:2.17.0
+    image: zaproxy/zap-stable:${ZAP_PROXY_VERSION}
     container_name: nc-zap
     restart: unless-stopped
     command:
