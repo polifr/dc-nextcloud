@@ -175,7 +175,12 @@ services:
         condition: service_healthy
 
   nc-zap:
-    image: zaproxy/zap-stable:${ZAP_PROXY_VERSION}
+    build:
+      context: ./nc-zap
+      dockerfile: Dockerfile
+      args:
+        ZAP_PROXY_VERSION: ${ZAP_PROXY_VERSION}
+    image: nc-zap:latest
     container_name: nc-zap
     restart: unless-stopped
     command:
