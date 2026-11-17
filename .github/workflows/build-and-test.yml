@@ -46,7 +46,7 @@ jobs:
             ghcr.io/zaproxy/zaproxy:stable \
             -c '
               echo "Updating ZAP add-ons..."
-              zap.sh -addonupdate
+              zap.sh -cmd -addonupdate
 
               echo "Starting ZAP baseline scan..."
               zap-baseline.py \
