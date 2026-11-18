@@ -214,6 +214,7 @@ services:
 networks:
   nc-proxy-network:
     driver: bridge
+    name: nc-proxy-network
     ipam:
       config:
         - subnet: 172.30.0.0/24
