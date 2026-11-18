@@ -10,7 +10,7 @@ These Nextcloud apps are installed by default during setup:
 - [groupfolders](https://apps.nextcloud.com/apps/groupfolders)
 - [user_ldap](https://apps.nextcloud.com/apps/user_ldap)
 
-It integrates with OnlyOffice, Euro Office and Collabora Document Servers.
+It integrates with OnlyOffice, Euro Office and Collabora Document Servers. The compose also includes a ZAP Proxy for vulnerability scanning, used also in the github acion for automatic security report generation.
 
 ## How to run the project (fast)
 
@@ -23,7 +23,7 @@ Add the following to the system `hosts` file:
 
 Generate the (self-signed) certificates for nginx, using the `make create-certificates` command.
 
-Launch `make start` to run the docker compose project with Nextcloud and Onlyoffice (more options listed in the next section).
+Launch `make start-onlyoffice` to run the docker compose project with Nextcloud and Onlyoffice (more options listed in the next section).
 
 Log in the local Nextcloud instance using <https://nextcloud.local>, as `admin` or `test` user (both have `my-n3xtcl0u4` as password).
 
