@@ -26,6 +26,7 @@ init-environment:
 			-e "s|^TALK_SIGNALING_SECRET=GENERATE_ME$$|TALK_SIGNALING_SECRET=$$(openssl rand -base64 24)|" \
 			-e "s|^TALK_TURN_SECRET=GENERATE_ME$$|TALK_TURN_SECRET=$$(openssl rand -base64 24)|" \
 			-e "s|^TALK_INTERNAL_SECRET=GENERATE_ME$$|TALK_INTERNAL_SECRET=$$(openssl rand -base64 24)|" \
+			-e "s|^ZAP_API_KEY=GENERATE_ME$$|ZAP_API_KEY=$$(openssl rand -base64 24)|" \
 			.env; \
 		echo "Creato .env con password e segreti Talk generati."; \
 		echo "Completa le password CHANGE_ME prima di avviare i servizi."; \
