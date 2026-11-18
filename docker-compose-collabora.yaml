@@ -1,6 +1,7 @@
 services:
   nc-collabora-documentserver:
     image: collabora/code:${COLLABORA_CODE_VERSION}
+    container_name: nc-collabora-documentserver
     restart: unless-stopped
     environment:
       aliasgroup1: "https://nextcloud.local:443,https://nextcloud\\.local:443"

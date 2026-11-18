@@ -1,6 +1,7 @@
 services:
   nc-onlyoffice-documentserver:
     image: onlyoffice/documentserver:${ONLYOFFICE_DS_VERSION}
+    container_name: nc-onlyoffice-documentserver
     restart: unless-stopped
     environment:
       REDIS_SERVER_HOST: nc-redis
