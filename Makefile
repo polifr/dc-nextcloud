@@ -131,6 +131,7 @@ start:
 stop:
 	docker compose \
 		-f docker-compose-common.yaml \
+		-f docker-compose-zap.yaml \
 		stop
 
 logs:
@@ -141,7 +142,14 @@ logs:
 reset:
 	docker compose \
 		-f docker-compose-common.yaml \
+		-f docker-compose-zap.yaml \
 		down -v
+
+with-zap:
+	docker compose \
+		-f docker-compose-zap.yaml \
+		up -d --build --wait
+
 
 clean:
 	docker compose \
@@ -149,6 +157,7 @@ clean:
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
+		-f docker-compose-zap.yaml \
 		down -v
 
 create-certificates:
