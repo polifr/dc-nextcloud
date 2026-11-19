@@ -1,0 +1,125 @@
+name: Build and integration tests
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXTCLOUD_HOST: nextcloud.local
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Verify Docker
+        run: |
+          docker version
+          docker compose version
+
+      - name: Configure hostname
+        run: |
+          echo "127.0.0.1 ${NEXTCLOUD_HOST}" | sudo tee -a /etc/hosts
+
+      - name: Initialize environment
+        run: |
+          make init-environment
+
+      - name: Create certificates
+        run: |
+          make create-certificates
+
+      - name: Start Nextcloud
+        run: |
+          make enable-zap start
+
+#      - name: ZAP Baseline Scan
+#        run: |
+#          mkdir -p "$RUNNER_TEMP/zap"
+#          chmod a+w "$RUNNER_TEMP/zap"
+#          docker run --rm \
+#            --add-host=${NEXTCLOUD_HOST}:host-gateway \
+#            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
+#            --entrypoint /bin/sh \
+#            ghcr.io/zaproxy/zaproxy:stable \
+#            -c '
+#              echo "Updating ZAP add-ons..."
+#              zap.sh -cmd -addonupdate
+#
+#              echo "Starting ZAP baseline scan..."
+#              zap-baseline.py \
+#                -t https://'"${NEXTCLOUD_HOST}"' \
+#                -r zap-report.html \
+#                -w zap-report.md \
+#                -m 5 \
+#                -j --client-spider \
+#                -I
+#
+#              scan_status=$?
+#
+#              if [ -f "$HOME/.ZAP/zap.log" ]; then
+#                cp "$HOME/.ZAP/zap.log" /zap/wrk/zap.log
+#                echo "ZAP log copied successfully."
+#              else
+#                echo "WARNING: ZAP log not found in $HOME/.ZAP/" >&2
+#              fi
+#
+#              exit $scan_status
+#            '
+
+      - name: Stop Nextcloud
+        if: always()
+        run: |
+          make enable-zap stop
+
+      - name: Collect Docker Compose logs
+        if: always()
+        run: |
+          make enable-zap logs > "$RUNNER_TEMP/docker-compose.log" 2>&1 || true
+
+      - name: Upload Docker Compose logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-compose-logs
+          path: ${{ runner.temp }}/docker-compose.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload HTML ZAP report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-html-report
+          path: ${{ runner.temp }}/zap/zap-report.html
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload MD ZAP report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-md-report
+          path: ${{ runner.temp }}/zap/zap-report.md
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload ZAP log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-log
+          path: ${{ runner.temp }}/zap/zap.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Stop Nextcloud
+        if: always()
+        run: |
+          make clean
