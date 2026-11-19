@@ -1,5 +1,3 @@
-name: dc-nextcloud
-
 volumes:
   nc-zap-data-volume:
     driver: local
@@ -16,6 +14,8 @@ services:
     restart: unless-stopped
     environment:
       ZAP_API_KEY: ${ZAP_API_KEY}
+    ports:
+      - "127.0.0.1:8080:8080"
     command:
       - zap.sh
       - -daemon
@@ -39,8 +39,3 @@ services:
       retries: 5
     networks:
       - nc-proxy-network
-
-networks:
-  nc-proxy-network:
-    external: true
-    name: nc-proxy-network
