@@ -9,6 +9,12 @@ export COLLABORA_CODE_VERSION := 26.04.6.1.1
 export AIO_TALK_VERSION := latest
 export ZAP_PROXY_VERSION := 2.17.0
 
+COMPOSE := docker compose -f docker-compose-common.yaml
+
+ifneq ($(filter enable-zap,$(MAKECMDGOALS)),)
+COMPOSE += -f docker-compose-zap.yaml
+endif
+
 .PHONY: init-environment
 
 init-environment:
@@ -32,6 +38,11 @@ init-environment:
 		echo "Completa le password CHANGE_ME prima di avviare i servizi."; \
 	fi
 
+.PHONY: enable-zap
+
+enable-zap:
+	@:
+
 update:
 	docker pull postgres:${POSTGRES_VERSION}
 	docker pull redis:${REDIS_VERSION}
@@ -46,114 +57,89 @@ update:
 	docker image prune -f
 
 start-onlyoffice:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-onlyoffice.yaml \
 		up -d --build --wait
 
 stop-onlyoffice:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-onlyoffice.yaml \
 		stop
 
 reset-onlyoffice:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-onlyoffice.yaml \
 		down -v
 
 start-euro-office:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-euro-office.yaml \
 		up -d --build --wait
 
 stop-euro-office:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-euro-office.yaml \
 		stop
 
 reset-euro-office:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-euro-office.yaml \
 		down -v
 
 start-collabora:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		up -d --build --wait
 
 stop-collabora:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		stop
 
 reset-collabora:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		down -v
 
 start-all:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		up -d --build --wait
 
 stop-all:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		stop
 
 reset-all:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
 		down -v
 
 start:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		up -d --build --wait
 
 stop:
-	docker compose \
-		-f docker-compose-common.yaml \
-		-f docker-compose-zap.yaml \
+	$(COMPOSE) \
 		stop
 
 logs:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		logs --no-color --timestamps
 
 reset:
-	docker compose \
-		-f docker-compose-common.yaml \
-		-f docker-compose-zap.yaml \
+	$(COMPOSE) \
 		down -v
 
-with-zap:
-	docker compose \
-		-f docker-compose-zap.yaml \
-		up -d --build --wait
-
-
 clean:
-	docker compose \
-		-f docker-compose-common.yaml \
+	$(COMPOSE) \
 		-f docker-compose-collabora.yaml \
 		-f docker-compose-euro-office.yaml \
 		-f docker-compose-onlyoffice.yaml \
