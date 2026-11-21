@@ -1,4 +1,4 @@
-name: Build and integration tests
+name: Build and integration tests - Automation Framework
 
 on:
   workflow_dispatch:
