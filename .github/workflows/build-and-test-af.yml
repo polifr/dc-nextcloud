@@ -52,48 +52,14 @@ jobs:
         run: |
           make create-certificates
 
-      - name: Verify ZAP plan
-        shell: bash
+      - name: ZAP Directory permissions
         run: |
-          set -euo pipefail
-      
-          PLAN_DIRECTORY="${GITHUB_WORKSPACE}/nc-zap/wrk/plans"
-          PLAN_FILE="${PLAN_DIRECTORY}/nextcloud-baseline-af.yaml"
-      
-          echo "Repository directory: $GITHUB_WORKSPACE"
-          echo "Plan atteso: $PLAN_FILE"
-      
-          if [[ ! -f "$PLAN_FILE" ]]; then
-            echo "::error::ZAP plan non trovato nel repository"
-            echo "Contenuto della directory plans:"
-            ls -la "$PLAN_DIRECTORY" || true
-            exit 1
-          fi
-      
-          echo "Plan presente:"
-          ls -l "$PLAN_FILE"
+          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/reports"
+          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/logs"
 
       - name: Start Nextcloud
         run: |
           make enable-zap start
-
-      - name: Verify ZAP plan in container
-        run: |
-          set -euo pipefail
-
-          PLAN_FILE="/zap/wrk/plans/nextcloud-baseline-af.yaml"
-
-          docker exec nc-zap sh -c "
-            if [ ! -f '$PLAN_FILE' ]; then
-              echo 'ERROR: plan non trovato nel container ZAP'
-              ls -la /zap/wrk
-              ls -la /zap/wrk/plans || true
-              exit 1
-            fi
-
-            echo 'Plan trovato nel container:'
-            ls -l '$PLAN_FILE'
-          "
 
       - name: Run ZAP Automation Plan
         shell: bash
@@ -176,7 +142,7 @@ jobs:
       - name: Copy ZAP logs
         if: always()
         run: |
-          docker exec -u 0 nc-zap sh -c '
+          docker exec nc-zap sh -c '
             mkdir -p /zap/wrk/logs
             cp /home/zap/.ZAP/zap.log /zap/wrk/logs/zap.log
           '
