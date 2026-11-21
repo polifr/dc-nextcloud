@@ -176,7 +176,7 @@ jobs:
       - name: Copy ZAP logs
         if: always()
         run: |
-          docker exec "$ZAP_CONTAINER" sh -c '
+          docker exec nc-zap sh -c '
             mkdir -p /zap/wrk/logs
             cp /home/zap/.ZAP/zap.log /zap/wrk/logs/zap.log
           '
