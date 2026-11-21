@@ -125,30 +125,30 @@ services:
       nc-ldap:
         condition: service_healthy
 
-  nc-talk-hpb:
-    image: ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
-    container_name: nc-talk-hpb
-    restart: unless-stopped
-    environment:
-      NC_DOMAIN: nextcloud.local
-      TALK_HOST: nextcloud.local
-      TALK_PORT: "3478"
-      TURN_SECRET: ${TALK_TURN_SECRET}
-      SIGNALING_SECRET: ${TALK_SIGNALING_SECRET}
-      INTERNAL_SECRET: ${TALK_INTERNAL_SECRET}
-    ports:
-      - "3478:3478/tcp"
-      - "3478:3478/udp"
-    expose:
-      - "8081"
-    healthcheck:
-      test: ["CMD", "/healthcheck.sh"]
-      start_period: 30s
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    networks:
-      - nc-proxy-network
+#  nc-talk-hpb:
+#    image: ghcr.io/nextcloud-releases/aio-talk:${AIO_TALK_VERSION}
+#    container_name: nc-talk-hpb
+#    restart: unless-stopped
+#    environment:
+#      NC_DOMAIN: nextcloud.local
+#      TALK_HOST: nextcloud.local
+#      TALK_PORT: "3478"
+#      TURN_SECRET: ${TALK_TURN_SECRET}
+#      SIGNALING_SECRET: ${TALK_SIGNALING_SECRET}
+#      INTERNAL_SECRET: ${TALK_INTERNAL_SECRET}
+#    ports:
+#      - "3478:3478/tcp"
+#      - "3478:3478/udp"
+#    expose:
+#      - "8081"
+#    healthcheck:
+#      test: ["CMD", "/healthcheck.sh"]
+#      start_period: 30s
+#      interval: 30s
+#      timeout: 10s
+#      retries: 3
+#    networks:
+#      - nc-proxy-network
 
   nc-nginx:
     build:
