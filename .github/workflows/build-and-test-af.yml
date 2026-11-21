@@ -52,10 +52,48 @@ jobs:
         run: |
           make create-certificates
 
+      - name: Verify ZAP plan
+        shell: bash
+        run: |
+          set -euo pipefail
+      
+          PLAN_DIRECTORY="${GITHUB_WORKSPACE}/nc-zap/wrk/plans"
+          PLAN_FILE="${PLAN_DIRECTORY}/nextcloud-baseline-af.yaml"
+      
+          echo "Repository directory: $GITHUB_WORKSPACE"
+          echo "Plan atteso: $PLAN_FILE"
+      
+          if [[ ! -f "$PLAN_FILE" ]]; then
+            echo "::error::ZAP plan non trovato nel repository"
+            echo "Contenuto della directory plans:"
+            ls -la "$PLAN_DIRECTORY" || true
+            exit 1
+          fi
+      
+          echo "Plan presente:"
+          ls -l "$PLAN_FILE"
+
       - name: Start Nextcloud
         run: |
           make enable-zap start
 
+      - name: Verify ZAP plan in container
+        run: |
+          set -euo pipefail
+
+          PLAN_FILE="/zap/wrk/plans/nextcloud-baseline-af.yaml"
+
+          docker exec nc-zap sh -c "
+            if [ ! -f '$PLAN_FILE' ]; then
+              echo 'ERROR: plan non trovato nel container ZAP'
+              ls -la /zap/wrk
+              ls -la /zap/wrk/plans || true
+              exit 1
+            fi
+
+            echo 'Plan trovato nel container:'
+            ls -l '$PLAN_FILE'
+          "
 
       - name: Run ZAP Automation Plan
         shell: bash
@@ -135,6 +173,13 @@ jobs:
 
           echo "Piano ZAP completato senza errori."
 
+      - name: Copy ZAP logs
+        run: |
+          docker exec "$ZAP_CONTAINER" sh -c '
+            mkdir -p /zap/wrk/logs
+            cp /home/zap/.ZAP/zap.log /zap/wrk/logs/zap.log
+          '
+
       - name: Stop Nextcloud
         if: always()
         run: |
@@ -163,6 +208,16 @@ jobs:
           path: ./nc-zap/wrk/reports/*
           if-no-files-found: warn
           retention-days: 30
+
+      - name: Upload ZAP log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-log
+          path: ./nc-zap/wrk/logs/zap.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
 
       - name: Stop Nextcloud
         if: always()
