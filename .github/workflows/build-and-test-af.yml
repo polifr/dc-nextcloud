@@ -19,13 +19,34 @@ jobs:
           docker version
           docker compose version
 
-      - name: Configure hostname
-        run: |
-          echo "127.0.0.1 ${NEXTCLOUD_HOST}" | sudo tee -a /etc/hosts
-
       - name: Initialize environment
         run: |
           make init-environment
+
+      - name: Export ZAP API key
+        shell: bash
+        run: |
+          set -euo pipefail
+      
+          ZAP_API_KEY="$(python3 - <<'PY'
+          from pathlib import Path
+      
+          for line in Path(".env").read_text().splitlines():
+              if line.startswith("ZAP_API_KEY="):
+                  print(line.partition("=")[2])
+                  break
+          else:
+              raise SystemExit("ZAP_API_KEY non trovata nel .env")
+          PY
+          )"
+      
+          if [[ -z "$ZAP_API_KEY" ]]; then
+            echo "ZAP_API_KEY vuota"
+            exit 1
+          fi
+      
+          echo "::add-mask::$ZAP_API_KEY"
+          echo "ZAP_API_KEY=$ZAP_API_KEY" >> "$GITHUB_ENV"
 
       - name: Create certificates
         run: |
@@ -35,39 +56,84 @@ jobs:
         run: |
           make enable-zap start
 
-#      - name: ZAP Baseline Scan
-#        run: |
-#          mkdir -p "$RUNNER_TEMP/zap"
-#          chmod a+w "$RUNNER_TEMP/zap"
-#          docker run --rm \
-#            --add-host=${NEXTCLOUD_HOST}:host-gateway \
-#            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
-#            --entrypoint /bin/sh \
-#            ghcr.io/zaproxy/zaproxy:stable \
-#            -c '
-#              echo "Updating ZAP add-ons..."
-#              zap.sh -cmd -addonupdate
-#
-#              echo "Starting ZAP baseline scan..."
-#              zap-baseline.py \
-#                -t https://'"${NEXTCLOUD_HOST}"' \
-#                -r zap-report.html \
-#                -w zap-report.md \
-#                -m 5 \
-#                -j --client-spider \
-#                -I
-#
-#              scan_status=$?
-#
-#              if [ -f "$HOME/.ZAP/zap.log" ]; then
-#                cp "$HOME/.ZAP/zap.log" /zap/wrk/zap.log
-#                echo "ZAP log copied successfully."
-#              else
-#                echo "WARNING: ZAP log not found in $HOME/.ZAP/" >&2
-#              fi
-#
-#              exit $scan_status
-#            '
+
+      - name: Run ZAP Automation Plan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ZAP_API="http://localhost:8080"
+          PLAN_FILE="/zap/wrk/plans/nextcloud-baseline-af.yaml"
+          MAX_WAIT_SECONDS=3600
+          POLL_INTERVAL=5
+
+          echo "Avvio del piano ZAP: $PLAN_FILE"
+
+          # Avvia il piano e acquisisce il planId
+          START_RESPONSE="$(curl --fail --silent --show-error \
+            --get \
+            --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+            --data-urlencode "filePath=${PLAN_FILE}" \
+            "${ZAP_API}/JSON/automation/action/runPlan/")"
+
+          echo "$START_RESPONSE" | jq .
+
+          PLAN_ID="$(echo "$START_RESPONSE" | jq -r '.planId // empty')"
+
+          if [[ -z "$PLAN_ID" ]]; then
+            echo "Errore: ZAP non ha restituito un planId."
+            exit 1
+          fi
+
+          echo "Piano avviato. planId=$PLAN_ID"
+
+          START_TIME=$SECONDS
+
+          # Attende il completamento
+          while true; do
+            PROGRESS_RESPONSE="$(curl --fail --silent --show-error \
+              --get \
+              --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+              --data-urlencode "planId=${PLAN_ID}" \
+              "${ZAP_API}/JSON/automation/view/planProgress/")"
+
+            FINISHED="$(echo "$PROGRESS_RESPONSE" | jq -r '.finished // empty')"
+
+            if [[ -n "$FINISHED" ]]; then
+              break
+            fi
+
+            ELAPSED=$((SECONDS - START_TIME))
+
+            if (( ELAPSED >= MAX_WAIT_SECONDS )); then
+              echo "Timeout: il piano non è terminato entro ${MAX_WAIT_SECONDS} secondi."
+
+              curl --silent --show-error \
+                --get \
+                --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+                --data-urlencode "planId=${PLAN_ID}" \
+                "${ZAP_API}/JSON/automation/action/stopPlan/" || true
+
+              exit 1
+            fi
+
+            echo "Piano ancora in esecuzione (${ELAPSED}s)..."
+            sleep "$POLL_INTERVAL"
+          done
+
+          echo "Piano terminato alle: $FINISHED"
+
+          echo "Risultato finale:"
+          echo "$PROGRESS_RESPONSE" | jq .
+
+          ERRORS="$(echo "$PROGRESS_RESPONSE" | jq -r '.error | length')"
+
+          if (( ERRORS > 0 )); then
+            echo "Il piano ZAP è terminato con errori."
+            exit 1
+          fi
+
+          echo "Piano ZAP completato senza errori."
 
       - name: Stop Nextcloud
         if: always()
@@ -89,35 +155,14 @@ jobs:
           retention-days: 30
           archive: false
 
-      - name: Upload HTML ZAP report
+      - name: Upload ZAP reports
         if: always()
         uses: actions/upload-artifact@v7
         with:
-          name: zap-security-html-report
-          path: ${{ runner.temp }}/zap/zap-report.html
+          name: zap-security-reports
+          path: ./nc-zap/wrk/reports/*
           if-no-files-found: warn
           retention-days: 30
-          archive: false
-
-      - name: Upload MD ZAP report
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: zap-security-md-report
-          path: ${{ runner.temp }}/zap/zap-report.md
-          if-no-files-found: warn
-          retention-days: 30
-          archive: false
-
-      - name: Upload ZAP log
-        if: always()
-        uses: actions/upload-artifact@v7
-        with:
-          name: zap-security-log
-          path: ${{ runner.temp }}/zap/zap.log
-          if-no-files-found: warn
-          retention-days: 30
-          archive: false
 
       - name: Stop Nextcloud
         if: always()

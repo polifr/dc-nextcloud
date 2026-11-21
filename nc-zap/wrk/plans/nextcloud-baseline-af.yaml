@@ -1,0 +1,94 @@
+env:
+  contexts:
+  - name: nextcloud-authenticated
+    urls:
+    - https://nextcloud.local
+    includePaths:
+    - https://nextcloud.local.*
+    authentication:
+      method: browser
+      parameters:
+        loginPageUrl: https://nextcloud.local/login
+        loginPageWait: 2
+        browserId: firefox-headless
+        stepDelay: 0
+        diagnostics: false
+        steps: []
+      verification:
+        method: autodetect
+        pollFrequency: 60
+        pollUnits: requests
+        pollUrl: ""
+        pollPostData: ""
+    sessionManagement:
+      method: headers
+    technology: {}
+    structure: {}
+    users:
+    - name: zap-test
+      credentials:
+        username: "${ZAP_TEST_USER}"
+        password: "${ZAP_TEST_PASSWORD}"
+  parameters: {}
+jobs:
+- type: passiveScan-config
+  parameters: {}
+- type: spider
+  parameters:
+    context: nextcloud-authenticated
+    user: zap-test
+    url: https://nextcloud.local
+    parseDsStore: null
+  tests:
+  - name: At least 100 URLs found
+    type: stats
+    onFail: INFO
+    statistic: automation.spider.urls.added
+    operator: '>='
+    value: 100
+- type: spiderClient
+  parameters:
+    context: nextcloud-authenticated
+    user: zap-test
+    url: https://nextcloud.local
+    maxDuration: 0
+    maxChildren: 0
+    browserId: firefox-headless
+- type: passiveScan-wait
+  parameters: {}
+- type: report
+  parameters:
+    theme: original
+    reportDir: /zap/wrk/reports
+    reportTitle: ZAP by Checkmarx Scanning Report
+  risks:
+  - info
+  - low
+  - medium
+  - high
+  confidences:
+  - falsepositive
+  - low
+  - medium
+  - high
+  - confirmed
+  sections:
+  - siteRiskCounts
+  - responseBody
+  - appendix
+  - insights
+  - alertTypes
+  - responseHeader
+  - alertTypeCounts
+  - riskConfidenceCounts
+  - alerts
+  - aboutThisReport
+  - contents
+  - requestBody
+  - reportDescription
+  - reportParameters
+  - requestHeader
+  - summaries
+- type: exitStatus
+  parameters: {}
+
