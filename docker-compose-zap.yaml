@@ -13,8 +13,6 @@ services:
     container_name: nc-zap
     restart: unless-stopped
     environment:
-      ZAP_TEST_USER: ${NEXTCLOUD_ZAP_TEST_USER}
-      ZAP_TEST_PASSWORD: ${NEXTCLOUD_ZAP_TEST_PASSWORD}
       ZAP_API_KEY: ${ZAP_API_KEY}
       ZAP_WEBSWING_OPTS: >-
         -host 0.0.0.0
