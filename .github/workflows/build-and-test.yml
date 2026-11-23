@@ -43,7 +43,7 @@ jobs:
             --add-host=${NEXTCLOUD_HOST}:host-gateway \
             -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
             --entrypoint /bin/sh \
-            ghcr.io/zaproxy/zaproxy:stable \
+            zaproxy/zap-stable:2.17.0 \
             -c '
               echo "Updating ZAP add-ons..."
               zap.sh -cmd -addonupdate
