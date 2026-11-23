@@ -19,6 +19,10 @@ jobs:
           docker version
           docker compose version
 
+      - name: Configure hostname
+        run: |
+          echo "127.0.0.1 ${NEXTCLOUD_HOST}" | sudo tee -a /etc/hosts
+
       - name: Initialize environment
         run: |
           make init-environment
@@ -29,13 +33,21 @@ jobs:
 
       - name: Start Nextcloud
         run: |
-          make enable-zap start
+          make start
 
       - name: ZAP Baseline Scan
         run: |
           mkdir -p "$RUNNER_TEMP/zap"
           chmod a+w "$RUNNER_TEMP/zap"
-          docker exec nc-zap sh -c '
+          docker run --rm \
+            --add-host=${NEXTCLOUD_HOST}:host-gateway \
+            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
+            --entrypoint /bin/sh \
+            ghcr.io/zaproxy/zaproxy:stable \
+            -c '
+              echo "Updating ZAP add-ons..."
+              zap.sh -cmd -addonupdate
+
               echo "Starting ZAP baseline scan..."
               zap-baseline.py \
                 -t https://'"${NEXTCLOUD_HOST}"' \
@@ -60,7 +72,7 @@ jobs:
       - name: Stop Nextcloud
         if: always()
         run: |
-          make enable-zap stop
+          make stop
 
       - name: Collect Docker Compose logs
         if: always()
