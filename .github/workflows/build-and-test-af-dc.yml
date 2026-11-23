@@ -1,0 +1,168 @@
+name: Build and integration tests - Automation Framework - ZAP on compose
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      NEXTCLOUD_HOST: nextcloud.local
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Verify Docker
+        run: |
+          docker version
+          docker compose version
+
+      - name: Initialize environment
+        run: |
+          make init-environment
+
+      - name: Create certificates
+        run: |
+          make create-certificates
+
+      - name: ZAP Directory permissions
+        run: |
+          mkdir $GITHUB_WORKSPACE/nc-zap/wrk/reports
+          mkdir $GITHUB_WORKSPACE/nc-zap/wrk/logs
+          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/reports"
+          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/logs"
+
+      - name: Start Nextcloud
+        run: |
+          make enable-zap start
+
+      - name: Run ZAP Automation Plan
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          PLAN_FILE="/zap/wrk/plans/nextcloud-baseline-af.yaml"
+          MAX_WAIT_SECONDS=3600
+          POLL_INTERVAL=5
+
+          echo "Avvio del piano ZAP: $PLAN_FILE"
+
+          # Avvia il piano e acquisisce il planId
+          START_RESPONSE="$(curl --fail --silent --show-error \
+            --get \
+            --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+            --data-urlencode "filePath=${PLAN_FILE}" \
+            "${ZAP_API}/JSON/automation/action/runPlan/")"
+
+          echo "$START_RESPONSE" | jq .
+
+          PLAN_ID="$(echo "$START_RESPONSE" | jq -r '.planId // empty')"
+
+          if [[ -z "$PLAN_ID" ]]; then
+            echo "Errore: ZAP non ha restituito un planId."
+            exit 1
+          fi
+
+          echo "Piano avviato. planId=$PLAN_ID"
+
+          START_TIME=$SECONDS
+
+          # Attende il completamento
+          while true; do
+            PROGRESS_RESPONSE="$(curl --fail --silent --show-error \
+              --get \
+              --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+              --data-urlencode "planId=${PLAN_ID}" \
+              "${ZAP_API}/JSON/automation/view/planProgress/")"
+
+            FINISHED="$(echo "$PROGRESS_RESPONSE" | jq -r '.finished // empty')"
+
+            if [[ -n "$FINISHED" ]]; then
+              break
+            fi
+
+            ELAPSED=$((SECONDS - START_TIME))
+
+            if (( ELAPSED >= MAX_WAIT_SECONDS )); then
+              echo "Timeout: il piano non è terminato entro ${MAX_WAIT_SECONDS} secondi."
+
+              curl --silent --show-error \
+                --get \
+                --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
+                --data-urlencode "planId=${PLAN_ID}" \
+                "${ZAP_API}/JSON/automation/action/stopPlan/" || true
+
+              exit 1
+            fi
+
+            echo "Piano ancora in esecuzione (${ELAPSED}s)..."
+            sleep "$POLL_INTERVAL"
+          done
+
+          echo "Piano terminato alle: $FINISHED"
+
+          echo "Risultato finale:"
+          echo "$PROGRESS_RESPONSE" | jq .
+
+          ERRORS="$(echo "$PROGRESS_RESPONSE" | jq -r '.error | length')"
+
+          if (( ERRORS > 0 )); then
+            echo "Il piano ZAP è terminato con errori."
+            exit 1
+          fi
+
+          echo "Piano ZAP completato senza errori."
+
+      - name: Copy ZAP logs
+        if: always()
+        run: |
+          docker exec nc-zap sh -c '
+            mkdir -p /zap/wrk/logs
+            cp /home/zap/.ZAP/zap.log /zap/wrk/logs/zap.log
+          '
+
+      - name: Stop Nextcloud
+        if: always()
+        run: |
+          make enable-zap stop
+
+      - name: Collect Docker Compose logs
+        if: always()
+        run: |
+          make enable-zap logs > "$RUNNER_TEMP/docker-compose.log" 2>&1 || true
+
+      - name: Upload Docker Compose logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: docker-compose-logs
+          path: ${{ runner.temp }}/docker-compose.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Upload ZAP reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-reports
+          path: ./nc-zap/wrk/reports/*
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload ZAP log
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: zap-security-log
+          path: ./nc-zap/wrk/logs/zap.log
+          if-no-files-found: warn
+          retention-days: 30
+          archive: false
+
+      - name: Stop Nextcloud
+        if: always()
+        run: |
+          make clean
