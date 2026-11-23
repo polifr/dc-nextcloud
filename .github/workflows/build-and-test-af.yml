@@ -19,143 +19,62 @@ jobs:
           docker version
           docker compose version
 
+      - name: Configure hostname
+        run: |
+          echo "127.0.0.1 ${NEXTCLOUD_HOST}" | sudo tee -a /etc/hosts
+
       - name: Initialize environment
         run: |
           make init-environment
-
-      - name: Export ZAP API key
-        shell: bash
-        run: |
-          set -euo pipefail
-      
-          ZAP_API_KEY="$(python3 - <<'PY'
-          from pathlib import Path
-      
-          for line in Path(".env").read_text().splitlines():
-              if line.startswith("ZAP_API_KEY="):
-                  print(line.partition("=")[2])
-                  break
-          else:
-              raise SystemExit("ZAP_API_KEY non trovata nel .env")
-          PY
-          )"
-      
-          if [[ -z "$ZAP_API_KEY" ]]; then
-            echo "ZAP_API_KEY vuota"
-            exit 1
-          fi
-      
-          echo "::add-mask::$ZAP_API_KEY"
-          echo "ZAP_API_KEY=$ZAP_API_KEY" >> "$GITHUB_ENV"
 
       - name: Create certificates
         run: |
           make create-certificates
 
-      - name: ZAP Directory permissions
-        run: |
-          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/reports"
-          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/logs"
-
       - name: Start Nextcloud
         run: |
-          make enable-zap start
+          make start
 
-      - name: Run ZAP Automation Plan
-        shell: bash
+      - name: ZAP Automation Framework Scan
         run: |
-          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/zap"
+          chmod a+w "$RUNNER_TEMP/zap"
+          docker run --rm \
+            --add-host=${NEXTCLOUD_HOST}:host-gateway \
+            --env-file "$GITHUB_WORKSPACE/.env" \
+            -v "$GITHUB_WORKSPACE/nc-zap/wrk/plans:/zap/plans:rw" \
+            -v "$RUNNER_TEMP/zap:/zap/wrk:rw" \
+            --entrypoint /bin/sh \
+            zaproxy/zap-stable:2.17.0 \
+            -c '
+              echo "Updating ZAP add-ons..."
+              zap.sh -cmd -addonupdate
 
-          ZAP_API="http://localhost:8080"
-          PLAN_FILE="/zap/wrk/plans/nextcloud-baseline-af.yaml"
-          MAX_WAIT_SECONDS=3600
-          POLL_INTERVAL=5
+              echo "Starting ZAP Automation Framework scan..."
+              zap.sh -cmd \
+                -autorun /zap/plans/nextcloud-baseline-af.yaml
 
-          echo "Avvio del piano ZAP: $PLAN_FILE"
+              scan_status=$?
 
-          # Avvia il piano e acquisisce il planId
-          START_RESPONSE="$(curl --fail --silent --show-error \
-            --get \
-            --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
-            --data-urlencode "filePath=${PLAN_FILE}" \
-            "${ZAP_API}/JSON/automation/action/runPlan/")"
+              if [ -f "$HOME/.ZAP/zap.log" ]; then
+                cp "$HOME/.ZAP/zap.log" /zap/wrk/zap.log
+                echo "ZAP log copied successfully."
+              else
+                echo "WARNING: ZAP log not found in $HOME/.ZAP/" >&2
+              fi
 
-          echo "$START_RESPONSE" | jq .
-
-          PLAN_ID="$(echo "$START_RESPONSE" | jq -r '.planId // empty')"
-
-          if [[ -z "$PLAN_ID" ]]; then
-            echo "Errore: ZAP non ha restituito un planId."
-            exit 1
-          fi
-
-          echo "Piano avviato. planId=$PLAN_ID"
-
-          START_TIME=$SECONDS
-
-          # Attende il completamento
-          while true; do
-            PROGRESS_RESPONSE="$(curl --fail --silent --show-error \
-              --get \
-              --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
-              --data-urlencode "planId=${PLAN_ID}" \
-              "${ZAP_API}/JSON/automation/view/planProgress/")"
-
-            FINISHED="$(echo "$PROGRESS_RESPONSE" | jq -r '.finished // empty')"
-
-            if [[ -n "$FINISHED" ]]; then
-              break
-            fi
-
-            ELAPSED=$((SECONDS - START_TIME))
-
-            if (( ELAPSED >= MAX_WAIT_SECONDS )); then
-              echo "Timeout: il piano non è terminato entro ${MAX_WAIT_SECONDS} secondi."
-
-              curl --silent --show-error \
-                --get \
-                --header "X-ZAP-API-Key: ${ZAP_API_KEY}" \
-                --data-urlencode "planId=${PLAN_ID}" \
-                "${ZAP_API}/JSON/automation/action/stopPlan/" || true
-
-              exit 1
-            fi
-
-            echo "Piano ancora in esecuzione (${ELAPSED}s)..."
-            sleep "$POLL_INTERVAL"
-          done
-
-          echo "Piano terminato alle: $FINISHED"
-
-          echo "Risultato finale:"
-          echo "$PROGRESS_RESPONSE" | jq .
-
-          ERRORS="$(echo "$PROGRESS_RESPONSE" | jq -r '.error | length')"
-
-          if (( ERRORS > 0 )); then
-            echo "Il piano ZAP è terminato con errori."
-            exit 1
-          fi
-
-          echo "Piano ZAP completato senza errori."
-
-      - name: Copy ZAP logs
-        if: always()
-        run: |
-          docker exec nc-zap sh -c '
-            mkdir -p /zap/wrk/logs
-            cp /home/zap/.ZAP/zap.log /zap/wrk/logs/zap.log
-          '
+              exit $scan_status
+            '
 
       - name: Stop Nextcloud
         if: always()
         run: |
-          make enable-zap stop
+          make stop
 
       - name: Collect Docker Compose logs
         if: always()
         run: |
-          make enable-zap logs > "$RUNNER_TEMP/docker-compose.log" 2>&1 || true
+          make logs > "$RUNNER_TEMP/docker-compose.log" 2>&1 || true
 
       - name: Upload Docker Compose logs
         if: always()
@@ -172,7 +91,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-reports
-          path: ./nc-zap/wrk/reports/*
+          path: ${{ runner.temp }}/zap/*
           if-no-files-found: warn
           retention-days: 30
 
@@ -181,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-log
-          path: ./nc-zap/wrk/logs/zap.log
+          path: ${{ runner.temp }}/zap/zap.log
           if-no-files-found: warn
           retention-days: 30
           archive: false
