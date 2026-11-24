@@ -35,6 +35,9 @@ php occ config:system:set enabledPreviewProviders \
 php occ user:add --password-from-env --display-name="Test User" --group="test-users" test
 OC_PASS="${ZAP_PASS}" php occ user:add --password-from-env --display-name="ZAP Test User" --group="zap-test-users" "${ZAP_USER}"
 
+# Disabilitazione wizard di primo accesso
+php occ app:disable firstrunwizard || true
+
 # Configurazione ldap
 php occ ldap:create-empty-config
 php occ ldap:set-config s01 ldapConfigurationActive "1"
