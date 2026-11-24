@@ -1,7 +1,4 @@
 env:
-  vars:
-    zapTestPassword: ${NEXTCLOUD_ZAP_TEST_PASSWORD}
-    zapTestUser: ${NEXTCLOUD_ZAP_TEST_USER}
   contexts:
   - name: nextcloud-authenticated
     urls:
@@ -33,6 +30,9 @@ env:
         password: "${zapTestPassword}"
         username: "${zapTestUser}"
   parameters: {}
+  vars:
+    zapTestPassword: "${NEXTCLOUD_ZAP_TEST_PASSWORD}"
+    zapTestUser: "${NEXTCLOUD_ZAP_TEST_USER}"
 jobs:
 - type: passiveScan-config
   parameters: {}
@@ -41,6 +41,8 @@ jobs:
     context: nextcloud-authenticated
     user: zap-test
     url: https://nextcloud.local
+    maxDuration: 5
+    parseDsStore: null
   tests:
   - name: At least 100 URLs found
     type: stats
@@ -53,24 +55,24 @@ jobs:
     context: nextcloud-authenticated
     user: zap-test
     url: https://nextcloud.local
-    maxDuration: 0
+    maxDuration: 5
     maxChildren: 0
+    numberOfBrowsers: 2
     browserId: firefox-headless
 - type: passiveScan-wait
-  parameters: {}
+  parameters:
+    maxDuration: 5
 - type: report
   parameters:
-    template: risk-confidence-html
     theme: original
     reportDir: /zap/wrk/reports
+    reportFile: "{{yyyy-MM-dd}}-ZAP-Report-[[site]]-risk"
     reportTitle: ZAP by Checkmarx Scanning Report
   risks:
-  - info
   - low
   - medium
   - high
   confidences:
-  - falsepositive
   - low
   - medium
   - high
@@ -92,6 +94,34 @@ jobs:
   - reportParameters
   - requestHeader
   - summaries
+- type: report
+  parameters:
+    template: modern
+    theme: corporate
+    reportDir: /zap/wrk/reports
+    reportFile: "{{yyyy-MM-dd}}-ZAP-Report-[[site]]-modern"
+    reportTitle: ZAP by Checkmarx Scanning Report
+  risks:
+  - info
+  - low
+  - medium
+  - high
+  confidences:
+  - falsepositive
+  - low
+  - medium
+  - high
+  - confirmed
+  sections:
+  - passingrules
+  - insights
+  - instancecount
+  - alertdetails
+  - alertcount
+  - params
+  - chart
+  - statistics
 - type: exitStatus
-  parameters: {}
+  parameters:
+    warnExitValue: 0
 
