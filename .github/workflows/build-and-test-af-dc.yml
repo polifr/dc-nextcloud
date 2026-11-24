@@ -42,6 +42,14 @@ jobs:
         shell: bash
         run: |
           docker exec nc-zap sh -c '
+              test -n "$NEXTCLOUD_ZAP_TEST_USER" &&
+                echo "NEXTCLOUD_ZAP_TEST_USER: presente" ||
+                echo "NEXTCLOUD_ZAP_TEST_USER: assente"
+            
+              test -n "$NEXTCLOUD_ZAP_TEST_PASSWORD" &&
+                echo "NEXTCLOUD_ZAP_TEST_PASSWORD: presente" ||
+                echo "NEXTCLOUD_ZAP_TEST_PASSWORD: assente"
+
               echo "Starting ZAP Automation Framework scan..."
               zap.sh -cmd -host 0.0.0.0 -port 8090 \
                 -autorun /zap/wrk/plans/nextcloud-baseline-af.yaml

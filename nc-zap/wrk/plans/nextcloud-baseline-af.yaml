@@ -1,4 +1,7 @@
 env:
+  vars:
+    zapTestPassword: ${NEXTCLOUD_ZAP_TEST_PASSWORD}
+    zapTestUser: ${NEXTCLOUD_ZAP_TEST_USER}
   contexts:
   - name: nextcloud-authenticated
     urls:
@@ -9,7 +12,7 @@ env:
       method: browser
       parameters:
         browserId: firefox-headless
-        diagnostics: false
+        diagnostics: true
         loginPageWait: 2
         loginPageUrl: https://nextcloud.local/login
         steps: []
@@ -27,8 +30,8 @@ env:
     users:
     - name: zap-test
       credentials:
-        password: "${NEXTCLOUD_ZAP_TEST_PASSWORD}"
-        username: "${NEXTCLOUD_ZAP_TEST_USER}"
+        password: "${zapTestPassword}"
+        username: "${zapTestUser}"
   parameters: {}
 jobs:
 - type: passiveScan-config
@@ -36,6 +39,7 @@ jobs:
 - type: spider
   parameters:
     context: nextcloud-authenticated
+    user: zap-test
     url: https://nextcloud.local
   tests:
   - name: At least 100 URLs found
@@ -47,6 +51,7 @@ jobs:
 - type: spiderClient
   parameters:
     context: nextcloud-authenticated
+    user: zap-test
     url: https://nextcloud.local
     maxDuration: 0
     maxChildren: 0
