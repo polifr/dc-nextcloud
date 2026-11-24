@@ -58,12 +58,18 @@
         </postparser>
         <authentication>
             <type>6</type>
-            <strategy>AUTO_DETECT</strategy>
-            <pollurl/>
+            <strategy>POLL_URL</strategy>
+            <pollurl>https://nextcloud.local/apps/dashboard/</pollurl>
             <polldata/>
-            <pollheaders/>
+            <pollheaders>user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0
+accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+accept-language: en-US,en;q=0.9
+connection: keep-alive
+</pollheaders>
             <pollfreq>60</pollfreq>
             <pollunits>REQUESTS</pollunits>
+            <loggedin>\Q 200 OK\E</loggedin>
+            <loggedout>\Q 303 See Other\E</loggedout>
             <browser>
                 <loginpageurl>https://nextcloud.local/login</loginpageurl>
                 <browserid>firefox-headless</browserid>
@@ -72,7 +78,7 @@
             </browser>
         </authentication>
         <users>
-            <user>247;true;emFwLXRlc3Q=;6;emFwLXRlc3Q=~VTk1VStYOUViRXBFZWNiSm16MEl0aVkvVWpXTHhOVTU=~~30~6~U0hBMQ==~</user>
+            <user>247;true;emFwLXRlc3Q=;6;emFwLXRlc3Q=~VTk1VStYOUViRXBFZWNiSm16MEl0aVkvVWpXTHhOVTU=~</user>
         </users>
         <forceduser>247</forceduser>
         <session>
