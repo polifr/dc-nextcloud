@@ -36,7 +36,6 @@ jobs:
 - type: spider
   parameters:
     context: nextcloud-authenticated
-    user: zap-test
     url: https://nextcloud.local
   tests:
   - name: At least 100 URLs found
@@ -45,16 +44,13 @@ jobs:
     statistic: automation.spider.urls.added
     operator: '>='
     value: 100
-  enabled: false
 - type: spiderClient
   parameters:
     context: nextcloud-authenticated
-    user: zap-test
     url: https://nextcloud.local
     maxDuration: 0
     maxChildren: 0
     browserId: firefox-headless
-  enabled: false
 - type: passiveScan-wait
   parameters: {}
 - type: report
