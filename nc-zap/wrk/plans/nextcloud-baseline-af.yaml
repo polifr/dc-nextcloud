@@ -60,8 +60,8 @@ jobs:
   parameters: {}
 - type: report
   parameters:
-    template: modern
-    theme: corporate
+    template: risk-confidence-html
+    theme: original
     reportDir: /zap/wrk/reports
     reportTitle: ZAP by Checkmarx Scanning Report
   risks:
