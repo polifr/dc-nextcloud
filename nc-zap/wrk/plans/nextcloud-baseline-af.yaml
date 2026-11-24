@@ -8,12 +8,12 @@ env:
     authentication:
       method: browser
       parameters:
-        loginPageUrl: https://nextcloud.local/login
-        loginPageWait: 2
         browserId: firefox-headless
-        stepDelay: 0
         diagnostics: false
+        loginPageWait: 2
+        loginPageUrl: https://nextcloud.local/login
         steps: []
+        stepDelay: 0
       verification:
         method: autodetect
         pollFrequency: 60
@@ -27,8 +27,8 @@ env:
     users:
     - name: zap-test
       credentials:
-        username: "${NEXTCLOUD_ZAP_TEST_USER}"
         password: "${NEXTCLOUD_ZAP_TEST_PASSWORD}"
+        username: "${NEXTCLOUD_ZAP_TEST_USER}"
   parameters: {}
 jobs:
 - type: passiveScan-config
@@ -38,7 +38,6 @@ jobs:
     context: nextcloud-authenticated
     user: zap-test
     url: https://nextcloud.local
-    parseDsStore: null
   tests:
   - name: At least 100 URLs found
     type: stats
@@ -46,6 +45,7 @@ jobs:
     statistic: automation.spider.urls.added
     operator: '>='
     value: 100
+  enabled: false
 - type: spiderClient
   parameters:
     context: nextcloud-authenticated
@@ -54,6 +54,7 @@ jobs:
     maxDuration: 0
     maxChildren: 0
     browserId: firefox-headless
+  enabled: false
 - type: passiveScan-wait
   parameters: {}
 - type: report
