@@ -10,7 +10,7 @@ env:
       parameters:
         browserId: firefox-headless
         diagnostics: true
-        loginPageWait: 30
+        loginPageWait: 10
         loginPageUrl: https://nextcloud.local/login
         steps: []
         stepDelay: 0
