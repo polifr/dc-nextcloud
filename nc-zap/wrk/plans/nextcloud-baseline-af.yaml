@@ -10,7 +10,7 @@ env:
       parameters:
         browserId: firefox-headless
         diagnostics: true
-        loginPageWait: 2
+        loginPageWait: 30
         loginPageUrl: https://nextcloud.local/login
         steps: []
         stepDelay: 0
@@ -18,7 +18,7 @@ env:
         method: autodetect
         pollFrequency: 60
         pollUnits: requests
-        pollUrl: ""
+        pollUrl: https://nextcloud.local/apps/dashboard/
         pollPostData: ""
     sessionManagement:
       method: headers
