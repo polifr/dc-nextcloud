@@ -8,12 +8,12 @@ env:
     authentication:
       method: browser
       parameters:
-        loginPageUrl: https://nextcloud.local/login
-        loginPageWait: 2
         browserId: firefox-headless
-        stepDelay: 0
         diagnostics: true
+        loginPageWait: 30
+        loginPageUrl: https://nextcloud.local/login
         steps: []
+        stepDelay: 0
       verification:
         method: poll
         loggedInRegex: \Q 200 OK\E
@@ -130,6 +130,5 @@ jobs:
   - chart
   - statistics
 - type: exitStatus
-  parameters:
-    warnExitValue: 0
+  parameters: {}
 
