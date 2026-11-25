@@ -52,6 +52,7 @@ jobs:
 
               echo "Starting ZAP Automation Framework scan..."
               zap.sh -cmd -host 0.0.0.0 -port 8090 \
+                -loglevel debug \
                 -autorun /zap/wrk/plans/nextcloud-baseline-af.yaml
 
               scan_status=$?
