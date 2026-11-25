@@ -27,12 +27,9 @@ env:
     users:
     - name: zap-test
       credentials:
-        password: "${zapTestPassword}"
-        username: "${zapTestUser}"
+        password: "${NEXTCLOUD_ZAP_TEST_PASSWORD}"
+        username: "${NEXTCLOUD_ZAP_TEST_USER}"
   parameters: {}
-  vars:
-    zapTestPassword: "${NEXTCLOUD_ZAP_TEST_PASSWORD}"
-    zapTestUser: "${NEXTCLOUD_ZAP_TEST_USER}"
 jobs:
 - type: passiveScan-config
   parameters: {}
