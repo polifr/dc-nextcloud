@@ -36,6 +36,7 @@ jobs:
 - type: spider
   parameters:
     context: nextcloud-authenticated
+    user: zap-test
     url: https://nextcloud.local
     maxDuration: 5
     parseDsStore: null
@@ -49,6 +50,7 @@ jobs:
 - type: spiderClient
   parameters:
     context: nextcloud-authenticated
+    user: zap-test
     url: https://nextcloud.local
     maxDuration: 5
     maxChildren: 0
