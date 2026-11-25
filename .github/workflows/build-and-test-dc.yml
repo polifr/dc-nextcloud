@@ -29,10 +29,7 @@ jobs:
 
       - name: ZAP Directory permissions
         run: |
-          mkdir -p $GITHUB_WORKSPACE/nc-zap/wrk/reports
-          mkdir -p $GITHUB_WORKSPACE/nc-zap/wrk/logs
-          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/reports"
-          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk/logs"
+          chmod a+rwx "$GITHUB_WORKSPACE/nc-zap/wrk"
 
       - name: Start Nextcloud
         run: |
@@ -45,8 +42,8 @@ jobs:
               echo "Starting ZAP baseline scan..."
               zap-baseline.py \
                 -t https://'"${NEXTCLOUD_HOST}"' \
-                -r '"${GITHUB_WORKSPACE}"'/nc-zap/wrk/reports/zap-report.html \
-                -w '"${GITHUB_WORKSPACE}"'/nc-zap/wrk/reports/zap-report.md \
+                -r zap-report.html \
+                -w zap-report.md \
                 -m 5 \
                 -j --client-spider \
                 -P 8090 \
@@ -55,7 +52,7 @@ jobs:
               scan_status=$?
 
               if [ -f "$HOME/.ZAP/zap.log" ]; then
-                cp "$HOME/.ZAP/zap.log" /zap/wrk/logs/zap.log
+                cp "$HOME/.ZAP/zap.log" /zap/wrk/zap.log
                 echo "ZAP log copied successfully."
               else
                 echo "WARNING: ZAP log not found in $HOME/.ZAP/" >&2
@@ -89,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-html-report
-          path: ./nc-zap/wrk/reports/zap-report.html
+          path: ./nc-zap/wrk/zap-report.html
           if-no-files-found: warn
           retention-days: 30
           archive: false
@@ -99,7 +96,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-md-report
-          path: ./nc-zap/wrk/reports/zap-report.md
+          path: ./nc-zap/wrk/zap-report.md
           if-no-files-found: warn
           retention-days: 30
           archive: false
@@ -109,7 +106,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: zap-security-log
-          path: ./nc-zap/wrk/logs/zap.log
+          path: ./nc-zap/wrk/zap.log
           if-no-files-found: warn
           retention-days: 30
           archive: false
