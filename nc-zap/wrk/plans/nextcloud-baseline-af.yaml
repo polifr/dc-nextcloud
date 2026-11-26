@@ -44,13 +44,18 @@ env:
 jobs:
 - type: passiveScan-config
   parameters: {}
+- type: activeScan-policy
+  parameters:
+    name: nextcloud-ci-policy
+  policyDefinition:
+    defaultStrength: low
+    defaultThreshold: medium
 - type: spider
   parameters:
     context: nextcloud-authenticated
     user: zap-test
     url: https://nextcloud.local
     maxDuration: 5
-    parseDsStore: null
   tests:
   - name: At least 100 URLs found
     type: stats
@@ -67,6 +72,20 @@ jobs:
     maxChildren: 0
     numberOfBrowsers: 2
     browserId: firefox-headless
+- type: passiveScan-wait
+  parameters:
+    maxDuration: 5
+- type: activeScan
+  parameters:
+    context: nextcloud-authenticated
+    user: zap-test
+    url: https://nextcloud.local
+    policy: nextcloud-ci-policy
+    maxRuleDurationInMins: 5
+    maxScanDurationInMins: 5
+  policyDefinition:
+    defaultStrength: medium
+    defaultThreshold: medium
 - type: passiveScan-wait
   parameters:
     maxDuration: 5
@@ -129,6 +148,30 @@ jobs:
   - params
   - chart
   - statistics
+- type: report
+  parameters:
+    template: traditional-pdf
+    theme: null
+    reportDir: /zap/wrk/reports
+    reportFile: "{{yyyy-MM-dd}}-ZAP-Report-[[site]]-traditional"
+    reportTitle: ZAP by Checkmarx Scanning Report
+  risks:
+  - low
+  - medium
+  - high
+  confidences:
+  - low
+  - medium
+  - high
+  - confirmed
+  sections:
+  - insights
+  - scriptdiagnostics
+  - instancecount
+  - scriptdiagnosticsscreenshots
+  - scriptdiagnosticsoutput
+  - alertdetails
+  - alertcount
 - type: exitStatus
   parameters: {}
 
