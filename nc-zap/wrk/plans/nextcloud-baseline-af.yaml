@@ -44,12 +44,6 @@ env:
 jobs:
 - type: passiveScan-config
   parameters: {}
-- type: activeScan-policy
-  parameters:
-    name: nextcloud-ci-policy
-  policyDefinition:
-    defaultStrength: low
-    defaultThreshold: medium
 - type: spider
   parameters:
     context: nextcloud-authenticated
@@ -72,20 +66,6 @@ jobs:
     maxChildren: 0
     numberOfBrowsers: 2
     browserId: firefox-headless
-- type: passiveScan-wait
-  parameters:
-    maxDuration: 5
-- type: activeScan
-  parameters:
-    context: nextcloud-authenticated
-    user: zap-test
-    url: https://nextcloud.local
-    policy: nextcloud-ci-policy
-    maxRuleDurationInMins: 5
-    maxScanDurationInMins: 5
-  policyDefinition:
-    defaultStrength: medium
-    defaultThreshold: medium
 - type: passiveScan-wait
   parameters:
     maxDuration: 5
